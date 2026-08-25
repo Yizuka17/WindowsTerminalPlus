@@ -35,6 +35,7 @@ namespace Microsoft.Terminal.Settings.Model
 
         INHERITABLE_APPEARANCE_SETTING(String, DarkColorSchemeName);
         INHERITABLE_APPEARANCE_SETTING(String, LightColorSchemeName);
+        INHERITABLE_APPEARANCE_SETTING(Windows.UI.Xaml.ElementTheme, ColorSchemeMode);
 
         INHERITABLE_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, Foreground);
         INHERITABLE_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, Background);

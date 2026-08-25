@@ -144,6 +144,7 @@ Author(s):
     X(winrt::hstring, CellHeight, "cellHeight")
 
 #define MTSM_APPEARANCE_SETTINGS(X)                                                                                                                                \
+    X(winrt::Windows::UI::Xaml::ElementTheme, ColorSchemeMode, "colorSchemeMode", winrt::Windows::UI::Xaml::ElementTheme::Default)                                \
     X(Core::CursorStyle, CursorShape, "cursorShape", Core::CursorStyle::Bar)                                                                                       \
     X(uint32_t, CursorHeight, "cursorHeight", DEFAULT_CURSOR_HEIGHT)                                                                                               \
     X(float, BackgroundImageOpacity, "backgroundImageOpacity", 1.0f)                                                                                               \

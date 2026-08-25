@@ -74,15 +74,23 @@
                    Style="{StaticResource TextBlockSubHeaderStyle}" />
         <StackPanel Spacing="2"
                     Style="{StaticResource PivotStackStyle}">
-            <!--  Color Scheme  -->
-            <!--  This currently only display the Dark color scheme, even if the user has a pair of schemes set.  -->
+            <!--  Color scheme mode and theme-specific schemes  -->
             <local:SettingsExpander x:Name="ColorScheme"
-                                    x:Uid="Profile_ColorScheme"
-                                    AutomationProperties.Name="{x:Bind Appearance.CurrentColorScheme.Name, Mode=OneWay}">
+                                    x:Uid="Profile_ColorSchemeMode">
                 <local:SettingsExpander.Content>
                     <ComboBox Padding="4"
+                              ItemTemplate="{StaticResource EnumComboBoxTemplate}"
+                              ItemsSource="{x:Bind ColorSchemeModeList}"
+                              SelectedItem="{x:Bind CurrentColorSchemeMode, Mode=TwoWay}"
+                              Style="{StaticResource ComboBoxSettingStyle}" />
+                </local:SettingsExpander.Content>
+                <local:SettingsExpander.ItemsHeader>
+                    <StackPanel Spacing="2">
+                        <local:SettingsCard x:Uid="Profile_DarkColorScheme">
+                            <local:SettingsCard.Content>
+                    <ComboBox Padding="4"
                               ItemsSource="{x:Bind Appearance.SchemesList, Mode=OneWay}"
-                              SelectedItem="{x:Bind Appearance.CurrentColorScheme, Mode=TwoWay}"
+                              SelectedItem="{x:Bind Appearance.CurrentDarkColorScheme, Mode=TwoWay}"
                               Style="{StaticResource ComboBoxSettingStyle}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="local:ColorSchemeViewModel">
@@ -204,8 +212,20 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                </local:SettingsExpander.Content>
-                <local:SettingsExpander.ItemsHeader>
+                            </local:SettingsCard.Content>
+                        </local:SettingsCard>
+                        <local:SettingsCard x:Uid="Profile_LightColorScheme">
+                            <local:SettingsCard.Content>
+                                <ComboBox Padding="4"
+                                          DisplayMemberPath="Name"
+                                          ItemsSource="{x:Bind Appearance.SchemesList, Mode=OneWay}"
+                                          SelectedItem="{x:Bind Appearance.CurrentLightColorScheme, Mode=TwoWay}"
+                                          Style="{StaticResource ComboBoxSettingStyle}" />
+                            </local:SettingsCard.Content>
+                        </local:SettingsCard>
+                    </StackPanel>
+                </local:SettingsExpander.ItemsHeader>
+                <local:SettingsExpander.ItemsFooter>
                     <ContentPresenter Padding="16,12,16,16">
                         <StackPanel>
 
@@ -264,7 +284,7 @@
                             </local:SettingsExpander>
                         </StackPanel>
                     </ContentPresenter>
-                </local:SettingsExpander.ItemsHeader>
+                </local:SettingsExpander.ItemsFooter>
             </local:SettingsExpander>
             <!--  Font Face  -->
             <local:SettingsCard x:Name="FontFaceContainer"

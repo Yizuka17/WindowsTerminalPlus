@@ -77,7 +77,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
             std::array<std::vector<Windows::UI::Xaml::Controls::MenuFlyoutItemBase>, 2> fontSettingsUnused;
         };
 
-        AppearanceViewModel(const Model::AppearanceConfig& appearance);
+        AppearanceViewModel(const Model::AppearanceConfig& appearance, Windows::UI::Xaml::ElementTheme appTheme = Windows::UI::Xaml::ElementTheme::Default);
 
         winrt::hstring FontFace() const;
         void FontFace(const winrt::hstring& value);
@@ -130,6 +130,10 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         void ClearColorScheme();
         Editor::ColorSchemeViewModel CurrentColorScheme() const;
         void CurrentColorScheme(const Editor::ColorSchemeViewModel& val);
+        Editor::ColorSchemeViewModel CurrentDarkColorScheme() const;
+        void CurrentDarkColorScheme(const Editor::ColorSchemeViewModel& val);
+        Editor::ColorSchemeViewModel CurrentLightColorScheme() const;
+        void CurrentLightColorScheme(const Editor::ColorSchemeViewModel& val);
 
         Windows::UI::Color ForegroundPreview() const;
         Windows::UI::Color BackgroundPreview() const;
@@ -153,6 +157,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         OBSERVABLE_PROJECTED_SETTING(_appearance, CursorHeight);
         OBSERVABLE_PROJECTED_SETTING(_appearance, DarkColorSchemeName);
         OBSERVABLE_PROJECTED_SETTING(_appearance, LightColorSchemeName);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, ColorSchemeMode);
         OBSERVABLE_PROJECTED_SETTING(_appearance, BackgroundImagePath);
         OBSERVABLE_PROJECTED_SETTING(_appearance, BackgroundImageOpacity);
         OBSERVABLE_PROJECTED_SETTING(_appearance, BackgroundImageStretchMode);
@@ -182,6 +187,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         Model::AppearanceConfig _appearance;
         winrt::hstring _lastBgImagePath;
         std::optional<FontFaceDependentsData> _fontFaceDependents;
+        Windows::UI::Xaml::ElementTheme _appTheme{ Windows::UI::Xaml::ElementTheme::Default };
     };
 
     struct Appearances : AppearancesT<Appearances>
@@ -218,6 +224,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         WINRT_PROPERTY(Windows::Foundation::Collections::IObservableVector<Microsoft::Terminal::Settings::Editor::EnumEntry>, FontWeightList);
 
         GETSET_BINDABLE_ENUM_SETTING(CursorShape, Microsoft::Terminal::Core::CursorStyle, Appearance().CursorShape);
+        GETSET_BINDABLE_ENUM_SETTING(ColorSchemeMode, Windows::UI::Xaml::ElementTheme, Appearance().ColorSchemeMode);
         GETSET_BINDABLE_ENUM_SETTING(AdjustIndistinguishableColors, Microsoft::Terminal::Core::AdjustTextMode, Appearance().AdjustIndistinguishableColors);
 
         DEPENDENCY_PROPERTY(Editor::AppearanceViewModel, Appearance);

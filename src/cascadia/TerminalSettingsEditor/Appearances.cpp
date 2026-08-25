@@ -208,8 +208,9 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         return til::hstring_format(FMT_COMPILE(L"{}: {}"), KeyDisplayStringRef(), _value);
     }
 
-    AppearanceViewModel::AppearanceViewModel(const Model::AppearanceConfig& appearance) :
-        _appearance{ appearance }
+    AppearanceViewModel::AppearanceViewModel(const Model::AppearanceConfig& appearance, const ElementTheme appTheme) :
+        _appearance{ appearance },
+        _appTheme{ appTheme }
     {
         // Add a property changed handler to our own property changed event.
         // This propagates changes from the settings model to anybody listening to our
@@ -246,7 +247,15 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
             {
                 _NotifyChanges(L"CursorColorPreview");
             }
-            else if (viewModelProperty == L"DarkColorSchemeName" || viewModelProperty == L"LightColorSchemeName")
+            else if (viewModelProperty == L"DarkColorSchemeName")
+            {
+                _NotifyChanges(L"CurrentDarkColorScheme", L"CurrentColorScheme");
+            }
+            else if (viewModelProperty == L"LightColorSchemeName")
+            {
+                _NotifyChanges(L"CurrentLightColorScheme", L"CurrentColorScheme");
+            }
+            else if (viewModelProperty == L"ColorSchemeMode")
             {
                 _NotifyChanges(L"CurrentColorScheme");
             }
@@ -1011,13 +1020,12 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
     void AppearanceViewModel::ClearColorScheme()
     {
         ClearDarkColorSchemeName();
+        ClearLightColorSchemeName();
         _NotifyChanges(L"CurrentColorScheme");
     }
 
-    Editor::ColorSchemeViewModel AppearanceViewModel::CurrentColorScheme() const
+    static Editor::ColorSchemeViewModel _findColorScheme(const IObservableVector<Editor::ColorSchemeViewModel>& allSchemes, const hstring& schemeName)
     {
-        const auto schemeName{ DarkColorSchemeName() };
-        const auto allSchemes{ SchemesList() };
         for (const auto& scheme : allSchemes)
         {
             if (scheme.Name() == schemeName)
@@ -1028,6 +1036,40 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         // This Appearance points to a color scheme that was renamed or deleted.
         // Fallback to the first one in the list.
         return allSchemes.GetAt(0);
+    }
+
+    Editor::ColorSchemeViewModel AppearanceViewModel::CurrentDarkColorScheme() const
+    {
+        return _findColorScheme(SchemesList(), DarkColorSchemeName());
+    }
+
+    void AppearanceViewModel::CurrentDarkColorScheme(const ColorSchemeViewModel& val)
+    {
+        DarkColorSchemeName(val.Name());
+    }
+
+    Editor::ColorSchemeViewModel AppearanceViewModel::CurrentLightColorScheme() const
+    {
+        return _findColorScheme(SchemesList(), LightColorSchemeName());
+    }
+
+    void AppearanceViewModel::CurrentLightColorScheme(const ColorSchemeViewModel& val)
+    {
+        LightColorSchemeName(val.Name());
+    }
+
+    Editor::ColorSchemeViewModel AppearanceViewModel::CurrentColorScheme() const
+    {
+        auto mode = ColorSchemeMode();
+        if (mode == ElementTheme::Default)
+        {
+            mode = _appTheme;
+        }
+        if (mode == ElementTheme::Default)
+        {
+            mode = Model::Theme::IsSystemInDarkTheme() ? ElementTheme::Dark : ElementTheme::Light;
+        }
+        return mode == ElementTheme::Light ? CurrentLightColorScheme() : CurrentDarkColorScheme();
     }
 
     void AppearanceViewModel::CurrentColorScheme(const ColorSchemeViewModel& val)
@@ -1094,6 +1136,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         }
 
         INITIALIZE_BINDABLE_ENUM_SETTING(CursorShape, CursorStyle, winrt::Microsoft::Terminal::Core::CursorStyle, L"Profile_CursorShape", L"Content");
+        INITIALIZE_BINDABLE_ENUM_SETTING(ColorSchemeMode, ElementTheme, winrt::Windows::UI::Xaml::ElementTheme, L"Profile_ColorSchemeMode", L"Content");
         INITIALIZE_BINDABLE_ENUM_SETTING(AdjustIndistinguishableColors, AdjustIndistinguishableColors, winrt::Microsoft::Terminal::Core::AdjustTextMode, L"Profile_AdjustIndistinguishableColors", L"Content");
         INITIALIZE_BINDABLE_ENUM_SETTING_REVERSE_ORDER(BackgroundImageStretchMode, BackgroundImageStretchMode, winrt::Windows::UI::Xaml::Media::Stretch, L"Profile_BackgroundImageStretchMode", L"Content");
 
@@ -1383,6 +1426,10 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
                 else if (settingName == L"DarkColorSchemeName" || settingName == L"LightColorSchemeName")
                 {
                     PropertyChanged.raise(*this, PropertyChangedEventArgs{ L"CurrentColorScheme" });
+                }
+                else if (settingName == L"ColorSchemeMode")
+                {
+                    PropertyChanged.raise(*this, PropertyChangedEventArgs{ L"CurrentColorSchemeMode" });
                 }
                 else if (settingName == L"BackgroundImageStretchMode")
                 {

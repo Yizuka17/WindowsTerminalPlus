@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
 
     ProfileViewModel::ProfileViewModel(const Model::Profile& profile, const Model::CascadiaSettings& appSettings, const Model::WindowSettings& windowSettings, const Windows::UI::Core::CoreDispatcher& dispatcher) :
         _profile{ profile },
-        _defaultAppearanceViewModel{ winrt::make<implementation::AppearanceViewModel>(profile.DefaultAppearance().try_as<AppearanceConfig>()) },
+        _defaultAppearanceViewModel{ winrt::make<implementation::AppearanceViewModel>(profile.DefaultAppearance().try_as<AppearanceConfig>(), appSettings.GlobalSettings().CurrentTheme(windowSettings).RequestedTheme()) },
         _originalProfileGuid{ profile.Guid() },
         _appSettings{ appSettings },
         _windowSettings{ windowSettings },
@@ -164,7 +164,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
 
         if (profile.HasUnfocusedAppearance())
         {
-            _unfocusedAppearanceViewModel = winrt::make<implementation::AppearanceViewModel>(profile.UnfocusedAppearance().try_as<AppearanceConfig>());
+            _unfocusedAppearanceViewModel = winrt::make<implementation::AppearanceViewModel>(profile.UnfocusedAppearance().try_as<AppearanceConfig>(), _appSettings.GlobalSettings().CurrentTheme(_windowSettings).RequestedTheme());
         }
 
         _parsedPadding = StringToXamlThickness(_profile.Padding());
@@ -492,7 +492,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
     {
         _profile.CreateUnfocusedAppearance();
 
-        _unfocusedAppearanceViewModel = winrt::make<implementation::AppearanceViewModel>(_profile.UnfocusedAppearance().try_as<AppearanceConfig>());
+        _unfocusedAppearanceViewModel = winrt::make<implementation::AppearanceViewModel>(_profile.UnfocusedAppearance().try_as<AppearanceConfig>(), _appSettings.GlobalSettings().CurrentTheme(_windowSettings).RequestedTheme());
         _unfocusedAppearanceViewModel.SchemesList(DefaultAppearance().SchemesList());
 
         _NotifyChanges(L"UnfocusedAppearance", L"HasUnfocusedAppearance", L"ShowUnfocusedAppearance");

@@ -813,6 +813,26 @@ namespace SettingsModelUnitTests
         VERIFY_ARE_EQUAL(til::color(0x34, 0x56, 0x78), terminalSettings3->CursorColor()); // from profile (not set in color scheme)
         VERIFY_ARE_EQUAL(til::color(0x45, 0x67, 0x89), terminalSettings4->CursorColor()); // from profile (no color scheme)
         VERIFY_ARE_EQUAL(DEFAULT_CURSOR_COLOR, terminalSettings5->CursorColor()); // default
+
+        // A profile can select separate schemes for dark and light modes. Auto follows
+        // the application theme, while explicit dark/light overrides it.
+        const auto appearance = activeProfiles.GetAt(0).DefaultAppearance();
+        appearance.DarkColorSchemeName(L"schemeWithCursorColor");
+        appearance.LightColorSchemeName(L"schemeWithoutCursorColor");
+        const auto lightTheme = winrt::make<winrt::Microsoft::Terminal::Settings::Model::implementation::Theme>(winrt::Windows::UI::Xaml::ElementTheme::Light);
+        const auto darkTheme = winrt::make<winrt::Microsoft::Terminal::Settings::Model::implementation::Theme>(winrt::Windows::UI::Xaml::ElementTheme::Dark);
+
+        appearance.ColorSchemeMode(winrt::Windows::UI::Xaml::ElementTheme::Dark);
+        const auto forcedDark = createTerminalSettings(activeProfiles.GetAt(0), colorSchemes, lightTheme);
+        VERIFY_ARE_EQUAL(til::color(0x12, 0x34, 0x56), forcedDark->CursorColor());
+
+        appearance.ColorSchemeMode(winrt::Windows::UI::Xaml::ElementTheme::Light);
+        const auto forcedLight = createTerminalSettings(activeProfiles.GetAt(0), colorSchemes, darkTheme);
+        VERIFY_ARE_EQUAL(DEFAULT_CURSOR_COLOR, forcedLight->CursorColor());
+
+        appearance.ColorSchemeMode(winrt::Windows::UI::Xaml::ElementTheme::Default);
+        const auto automaticDark = createTerminalSettings(activeProfiles.GetAt(0), colorSchemes, darkTheme);
+        VERIFY_ARE_EQUAL(til::color(0x12, 0x34, 0x56), automaticDark->CursorColor());
     }
 
     void TerminalSettingsTests::TestCommandlineToTitlePromotion()

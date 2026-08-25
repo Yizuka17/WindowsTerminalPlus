@@ -68,7 +68,7 @@
     <WindowsTerminalAssetSuffix>-Dev</WindowsTerminalAssetSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(WindowsTerminalBranding)'=='Plus'">
-    <WindowsTerminalAssetSuffix>-Dev</WindowsTerminalAssetSuffix>
+    <WindowsTerminalAssetSuffix></WindowsTerminalAssetSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(WindowsTerminalBranding)'=='Preview'">
     <WindowsTerminalAssetSuffix>-Pre</WindowsTerminalAssetSuffix>

@@ -204,7 +204,11 @@ namespace winrt::Microsoft::Terminal::Settings
         _CursorShape = appearance.CursorShape();
         _CursorHeight = appearance.CursorHeight();
 
-        auto requestedTheme = currentTheme.RequestedTheme();
+        auto requestedTheme = appearance.ColorSchemeMode();
+        if (requestedTheme == winrt::Windows::UI::Xaml::ElementTheme::Default)
+        {
+            requestedTheme = currentTheme.RequestedTheme();
+        }
         if (requestedTheme == winrt::Windows::UI::Xaml::ElementTheme::Default)
         {
             requestedTheme = Model::Theme::IsSystemInDarkTheme() ?

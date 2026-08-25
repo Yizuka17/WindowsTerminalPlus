@@ -914,6 +914,42 @@
     <value>Expand to override the foreground, background, and selection background.</value>
     <comment>Help text for a control to select the scheme (or set) of colors used in the session. Directs the user to expand the control to access overrides for certain values in the color scheme.</comment>
   </data>
+  <data name="Profile_ColorSchemeMode.Header" xml:space="preserve">
+    <value>Appearance mode</value>
+    <comment>Header for choosing whether a profile follows the application theme or always uses its dark or light color scheme.</comment>
+  </data>
+  <data name="Profile_ColorSchemeMode.Description" xml:space="preserve">
+    <value>Choose automatically from the application theme, or always use the dark or light scheme.</value>
+    <comment>Description for the profile appearance mode setting.</comment>
+  </data>
+  <data name="Profile_ColorSchemeModeSystem.Content" xml:space="preserve">
+    <value>Auto</value>
+    <comment>Follow the application's current dark or light theme.</comment>
+  </data>
+  <data name="Profile_ColorSchemeModeDark.Content" xml:space="preserve">
+    <value>Dark</value>
+    <comment>Always use the profile's dark color scheme.</comment>
+  </data>
+  <data name="Profile_ColorSchemeModeLight.Content" xml:space="preserve">
+    <value>Light</value>
+    <comment>Always use the profile's light color scheme.</comment>
+  </data>
+  <data name="Profile_DarkColorScheme.Header" xml:space="preserve">
+    <value>Dark color scheme</value>
+    <comment>Header for selecting the color scheme used in dark appearance mode.</comment>
+  </data>
+  <data name="Profile_DarkColorScheme.Description" xml:space="preserve">
+    <value>Used when the appearance mode resolves to dark.</value>
+    <comment>Description for the dark color scheme selector.</comment>
+  </data>
+  <data name="Profile_LightColorScheme.Header" xml:space="preserve">
+    <value>Light color scheme</value>
+    <comment>Header for selecting the color scheme used in light appearance mode.</comment>
+  </data>
+  <data name="Profile_LightColorScheme.Description" xml:space="preserve">
+    <value>Used when the appearance mode resolves to light.</value>
+    <comment>Description for the light color scheme selector.</comment>
+  </data>
   <data name="Profile_Commandline.[using:Windows.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Command line</value>
     <comment>Name for a control to determine commandline executable (i.e. a .exe file) to run when a terminal session of this profile is launched.</comment>
