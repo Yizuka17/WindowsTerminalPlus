@@ -833,6 +833,31 @@ namespace SettingsModelUnitTests
         appearance.ColorSchemeMode(winrt::Windows::UI::Xaml::ElementTheme::Default);
         const auto automaticDark = createTerminalSettings(activeProfiles.GetAt(0), colorSchemes, darkTheme);
         VERIFY_ARE_EQUAL(til::color(0x12, 0x34, 0x56), automaticDark->CursorColor());
+
+        // Theme-specific custom colors are independent. Legacy custom colors remain
+        // the fallback only when the matching themed setting was never configured.
+        Json::Value themedOverrides{ Json::ValueType::objectValue };
+        themedOverrides["cursorColor"] = "#010203";
+        themedOverrides["darkCursorColor"] = "#ABCDEF";
+        themedOverrides["lightCursorColor"] = "#FEDCBA";
+        winrt::get_self<implementation::AppearanceConfig>(appearance)->LayerJson(themedOverrides);
+
+        appearance.ColorSchemeMode(winrt::Windows::UI::Xaml::ElementTheme::Dark);
+        const auto customDark = createTerminalSettings(activeProfiles.GetAt(0), colorSchemes, lightTheme);
+        VERIFY_ARE_EQUAL(til::color(0xAB, 0xCD, 0xEF), customDark->CursorColor());
+
+        appearance.ColorSchemeMode(winrt::Windows::UI::Xaml::ElementTheme::Light);
+        const auto customLight = createTerminalSettings(activeProfiles.GetAt(0), colorSchemes, darkTheme);
+        VERIFY_ARE_EQUAL(til::color(0xFE, 0xDC, 0xBA), customLight->CursorColor());
+
+        // Explicitly clearing the dark override means "use the dark scheme", not
+        // "fall back to the legacy shared cursorColor".
+        themedOverrides.clear();
+        themedOverrides["darkCursorColor"] = Json::nullValue;
+        winrt::get_self<implementation::AppearanceConfig>(appearance)->LayerJson(themedOverrides);
+        appearance.ColorSchemeMode(winrt::Windows::UI::Xaml::ElementTheme::Dark);
+        const auto clearedDark = createTerminalSettings(activeProfiles.GetAt(0), colorSchemes, lightTheme);
+        VERIFY_ARE_EQUAL(til::color(0x12, 0x34, 0x56), clearedDark->CursorColor());
     }
 
     void TerminalSettingsTests::TestCommandlineToTitlePromotion()

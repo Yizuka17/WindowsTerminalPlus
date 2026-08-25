@@ -19,6 +19,14 @@ static constexpr std::string_view ForegroundKey{ "foreground" };
 static constexpr std::string_view BackgroundKey{ "background" };
 static constexpr std::string_view SelectionBackgroundKey{ "selectionBackground" };
 static constexpr std::string_view CursorColorKey{ "cursorColor" };
+static constexpr std::string_view DarkForegroundKey{ "darkForeground" };
+static constexpr std::string_view DarkBackgroundKey{ "darkBackground" };
+static constexpr std::string_view DarkSelectionBackgroundKey{ "darkSelectionBackground" };
+static constexpr std::string_view DarkCursorColorKey{ "darkCursorColor" };
+static constexpr std::string_view LightForegroundKey{ "lightForeground" };
+static constexpr std::string_view LightBackgroundKey{ "lightBackground" };
+static constexpr std::string_view LightSelectionBackgroundKey{ "lightSelectionBackground" };
+static constexpr std::string_view LightCursorColorKey{ "lightCursorColor" };
 static constexpr std::string_view LegacyAcrylicTransparencyKey{ "acrylicOpacity" };
 static constexpr std::string_view OpacityKey{ "opacity" };
 static constexpr std::string_view ColorSchemeKey{ "colorScheme" };
@@ -35,6 +43,14 @@ winrt::com_ptr<AppearanceConfig> AppearanceConfig::CopyAppearance(const Appearan
     appearance->_Background = source->_Background;
     appearance->_SelectionBackground = source->_SelectionBackground;
     appearance->_CursorColor = source->_CursorColor;
+    appearance->_DarkForeground = source->_DarkForeground;
+    appearance->_DarkBackground = source->_DarkBackground;
+    appearance->_DarkSelectionBackground = source->_DarkSelectionBackground;
+    appearance->_DarkCursorColor = source->_DarkCursorColor;
+    appearance->_LightForeground = source->_LightForeground;
+    appearance->_LightBackground = source->_LightBackground;
+    appearance->_LightSelectionBackground = source->_LightSelectionBackground;
+    appearance->_LightCursorColor = source->_LightCursorColor;
     appearance->_Opacity = source->_Opacity;
 
     appearance->_DarkColorSchemeName = source->_DarkColorSchemeName;
@@ -56,6 +72,14 @@ Json::Value AppearanceConfig::ToJson() const
     JsonUtils::SetValueForKey(json, BackgroundKey, _Background);
     JsonUtils::SetValueForKey(json, SelectionBackgroundKey, _SelectionBackground);
     JsonUtils::SetValueForKey(json, CursorColorKey, _CursorColor);
+    JsonUtils::SetValueForKey(json, DarkForegroundKey, _DarkForeground);
+    JsonUtils::SetValueForKey(json, DarkBackgroundKey, _DarkBackground);
+    JsonUtils::SetValueForKey(json, DarkSelectionBackgroundKey, _DarkSelectionBackground);
+    JsonUtils::SetValueForKey(json, DarkCursorColorKey, _DarkCursorColor);
+    JsonUtils::SetValueForKey(json, LightForegroundKey, _LightForeground);
+    JsonUtils::SetValueForKey(json, LightBackgroundKey, _LightBackground);
+    JsonUtils::SetValueForKey(json, LightSelectionBackgroundKey, _LightSelectionBackground);
+    JsonUtils::SetValueForKey(json, LightCursorColorKey, _LightCursorColor);
     JsonUtils::SetValueForKey(json, OpacityKey, _Opacity, JsonUtils::OptionalConverter<float, IntAsFloatPercentConversionTrait>{});
     if (HasDarkColorSchemeName() || HasLightColorSchemeName())
     {
@@ -103,6 +127,23 @@ void AppearanceConfig::LayerJson(const Json::Value& json)
 
     JsonUtils::GetValueForKey(json, CursorColorKey, _CursorColor);
     _logSettingIfSet(CursorColorKey, _CursorColor.has_value());
+
+    JsonUtils::GetValueForKey(json, DarkForegroundKey, _DarkForeground);
+    _logSettingIfSet(DarkForegroundKey, _DarkForeground.has_value());
+    JsonUtils::GetValueForKey(json, DarkBackgroundKey, _DarkBackground);
+    _logSettingIfSet(DarkBackgroundKey, _DarkBackground.has_value());
+    JsonUtils::GetValueForKey(json, DarkSelectionBackgroundKey, _DarkSelectionBackground);
+    _logSettingIfSet(DarkSelectionBackgroundKey, _DarkSelectionBackground.has_value());
+    JsonUtils::GetValueForKey(json, DarkCursorColorKey, _DarkCursorColor);
+    _logSettingIfSet(DarkCursorColorKey, _DarkCursorColor.has_value());
+    JsonUtils::GetValueForKey(json, LightForegroundKey, _LightForeground);
+    _logSettingIfSet(LightForegroundKey, _LightForeground.has_value());
+    JsonUtils::GetValueForKey(json, LightBackgroundKey, _LightBackground);
+    _logSettingIfSet(LightBackgroundKey, _LightBackground.has_value());
+    JsonUtils::GetValueForKey(json, LightSelectionBackgroundKey, _LightSelectionBackground);
+    _logSettingIfSet(LightSelectionBackgroundKey, _LightSelectionBackground.has_value());
+    JsonUtils::GetValueForKey(json, LightCursorColorKey, _LightCursorColor);
+    _logSettingIfSet(LightCursorColorKey, _LightCursorColor.has_value());
 
     JsonUtils::GetValueForKey(json, LegacyAcrylicTransparencyKey, _Opacity);
     JsonUtils::GetValueForKey(json, OpacityKey, _Opacity, JsonUtils::OptionalConverter<float, IntAsFloatPercentConversionTrait>{});

@@ -139,6 +139,14 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         Windows::UI::Color BackgroundPreview() const;
         Windows::UI::Color SelectionBackgroundPreview() const;
         Windows::UI::Color CursorColorPreview() const;
+        Windows::UI::Color DarkForegroundPreview() const;
+        Windows::UI::Color DarkBackgroundPreview() const;
+        Windows::UI::Color DarkSelectionBackgroundPreview() const;
+        Windows::UI::Color DarkCursorColorPreview() const;
+        Windows::UI::Color LightForegroundPreview() const;
+        Windows::UI::Color LightBackgroundPreview() const;
+        Windows::UI::Color LightSelectionBackgroundPreview() const;
+        Windows::UI::Color LightCursorColorPreview() const;
 
         WINRT_PROPERTY(bool, IsDefault, false);
 
@@ -168,9 +176,18 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         OBSERVABLE_PROJECTED_SETTING(_appearance, Background);
         OBSERVABLE_PROJECTED_SETTING(_appearance, SelectionBackground);
         OBSERVABLE_PROJECTED_SETTING(_appearance, CursorColor);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, DarkForeground);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, DarkBackground);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, DarkSelectionBackground);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, DarkCursorColor);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, LightForeground);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, LightBackground);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, LightSelectionBackground);
+        OBSERVABLE_PROJECTED_SETTING(_appearance, LightCursorColor);
         WINRT_OBSERVABLE_PROPERTY(Windows::Foundation::Collections::IObservableVector<Editor::ColorSchemeViewModel>, SchemesList, _propertyChangedHandlers, nullptr);
 
     private:
+        Windows::UI::Xaml::ElementTheme _resolvedColorSchemeMode() const;
         void _invalidateFontFaceDependents() { _fontFaceDependents.reset(); }
         void _refreshFontFaceDependents();
         static std::pair<std::vector<Editor::FontKeyValuePair>::const_iterator, bool> _fontSettingSortedByKeyInsertPosition(const std::vector<Editor::FontKeyValuePair>& vec, uint32_t key);

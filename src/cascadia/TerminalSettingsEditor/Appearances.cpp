@@ -233,31 +233,63 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
             }
             else if (viewModelProperty == L"Foreground")
             {
-                _NotifyChanges(L"ForegroundPreview");
+                _NotifyChanges(L"ForegroundPreview", L"DarkForegroundPreview", L"LightForegroundPreview");
             }
             else if (viewModelProperty == L"Background")
             {
-                _NotifyChanges(L"BackgroundPreview");
+                _NotifyChanges(L"BackgroundPreview", L"DarkBackgroundPreview", L"LightBackgroundPreview");
             }
             else if (viewModelProperty == L"SelectionBackground")
             {
-                _NotifyChanges(L"SelectionBackgroundPreview");
+                _NotifyChanges(L"SelectionBackgroundPreview", L"DarkSelectionBackgroundPreview", L"LightSelectionBackgroundPreview");
             }
             else if (viewModelProperty == L"CursorColor")
             {
-                _NotifyChanges(L"CursorColorPreview");
+                _NotifyChanges(L"CursorColorPreview", L"DarkCursorColorPreview", L"LightCursorColorPreview");
+            }
+            else if (viewModelProperty == L"DarkForeground")
+            {
+                _NotifyChanges(L"DarkForegroundPreview", L"ForegroundPreview");
+            }
+            else if (viewModelProperty == L"DarkBackground")
+            {
+                _NotifyChanges(L"DarkBackgroundPreview", L"BackgroundPreview");
+            }
+            else if (viewModelProperty == L"DarkSelectionBackground")
+            {
+                _NotifyChanges(L"DarkSelectionBackgroundPreview", L"SelectionBackgroundPreview");
+            }
+            else if (viewModelProperty == L"DarkCursorColor")
+            {
+                _NotifyChanges(L"DarkCursorColorPreview", L"CursorColorPreview");
+            }
+            else if (viewModelProperty == L"LightForeground")
+            {
+                _NotifyChanges(L"LightForegroundPreview", L"ForegroundPreview");
+            }
+            else if (viewModelProperty == L"LightBackground")
+            {
+                _NotifyChanges(L"LightBackgroundPreview", L"BackgroundPreview");
+            }
+            else if (viewModelProperty == L"LightSelectionBackground")
+            {
+                _NotifyChanges(L"LightSelectionBackgroundPreview", L"SelectionBackgroundPreview");
+            }
+            else if (viewModelProperty == L"LightCursorColor")
+            {
+                _NotifyChanges(L"LightCursorColorPreview", L"CursorColorPreview");
             }
             else if (viewModelProperty == L"DarkColorSchemeName")
             {
-                _NotifyChanges(L"CurrentDarkColorScheme", L"CurrentColorScheme");
+                _NotifyChanges(L"CurrentDarkColorScheme", L"CurrentColorScheme", L"DarkForegroundPreview", L"DarkBackgroundPreview", L"DarkSelectionBackgroundPreview", L"DarkCursorColorPreview");
             }
             else if (viewModelProperty == L"LightColorSchemeName")
             {
-                _NotifyChanges(L"CurrentLightColorScheme", L"CurrentColorScheme");
+                _NotifyChanges(L"CurrentLightColorScheme", L"CurrentColorScheme", L"LightForegroundPreview", L"LightBackgroundPreview", L"LightSelectionBackgroundPreview", L"LightCursorColorPreview");
             }
             else if (viewModelProperty == L"ColorSchemeMode")
             {
-                _NotifyChanges(L"CurrentColorScheme");
+                _NotifyChanges(L"CurrentColorScheme", L"ForegroundPreview", L"BackgroundPreview", L"SelectionBackgroundPreview", L"CursorColorPreview");
             }
             else if (viewModelProperty == L"CurrentColorScheme")
             {
@@ -1058,7 +1090,7 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         LightColorSchemeName(val.Name());
     }
 
-    Editor::ColorSchemeViewModel AppearanceViewModel::CurrentColorScheme() const
+    ElementTheme AppearanceViewModel::_resolvedColorSchemeMode() const
     {
         auto mode = ColorSchemeMode();
         if (mode == ElementTheme::Default)
@@ -1069,7 +1101,12 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         {
             mode = Model::Theme::IsSystemInDarkTheme() ? ElementTheme::Dark : ElementTheme::Light;
         }
-        return mode == ElementTheme::Light ? CurrentLightColorScheme() : CurrentDarkColorScheme();
+        return mode;
+    }
+
+    Editor::ColorSchemeViewModel AppearanceViewModel::CurrentColorScheme() const
+    {
+        return _resolvedColorSchemeMode() == ElementTheme::Light ? CurrentLightColorScheme() : CurrentDarkColorScheme();
     }
 
     void AppearanceViewModel::CurrentColorScheme(const ColorSchemeViewModel& val)
@@ -1094,24 +1131,72 @@ namespace winrt::Microsoft::Terminal::Settings::Editor::implementation
         return deducedVal;
     }
 
+    static inline Windows::UI::Color _getThemedColorPreview(const IReference<Microsoft::Terminal::Core::Color>& themedVal,
+                                                            bool hasThemedOverride,
+                                                            const IReference<Microsoft::Terminal::Core::Color>& legacyVal,
+                                                            Windows::UI::Color deducedVal)
+    {
+        return hasThemedOverride ? _getColorPreview(themedVal, deducedVal) : _getColorPreview(legacyVal, deducedVal);
+    }
+
     Windows::UI::Color AppearanceViewModel::ForegroundPreview() const
     {
-        return _getColorPreview(_appearance.Foreground(), CurrentColorScheme().ForegroundColor().Color());
+        return _resolvedColorSchemeMode() == ElementTheme::Light ? LightForegroundPreview() : DarkForegroundPreview();
     }
 
     Windows::UI::Color AppearanceViewModel::BackgroundPreview() const
     {
-        return _getColorPreview(_appearance.Background(), CurrentColorScheme().BackgroundColor().Color());
+        return _resolvedColorSchemeMode() == ElementTheme::Light ? LightBackgroundPreview() : DarkBackgroundPreview();
     }
 
     Windows::UI::Color AppearanceViewModel::SelectionBackgroundPreview() const
     {
-        return _getColorPreview(_appearance.SelectionBackground(), CurrentColorScheme().SelectionBackgroundColor().Color());
+        return _resolvedColorSchemeMode() == ElementTheme::Light ? LightSelectionBackgroundPreview() : DarkSelectionBackgroundPreview();
     }
 
     Windows::UI::Color AppearanceViewModel::CursorColorPreview() const
     {
-        return _getColorPreview(_appearance.CursorColor(), CurrentColorScheme().CursorColor().Color());
+        return _resolvedColorSchemeMode() == ElementTheme::Light ? LightCursorColorPreview() : DarkCursorColorPreview();
+    }
+
+    Windows::UI::Color AppearanceViewModel::DarkForegroundPreview() const
+    {
+        return _getThemedColorPreview(_appearance.DarkForeground(), _appearance.HasDarkForeground() || _appearance.DarkForegroundOverrideSource(), _appearance.Foreground(), CurrentDarkColorScheme().ForegroundColor().Color());
+    }
+
+    Windows::UI::Color AppearanceViewModel::DarkBackgroundPreview() const
+    {
+        return _getThemedColorPreview(_appearance.DarkBackground(), _appearance.HasDarkBackground() || _appearance.DarkBackgroundOverrideSource(), _appearance.Background(), CurrentDarkColorScheme().BackgroundColor().Color());
+    }
+
+    Windows::UI::Color AppearanceViewModel::DarkSelectionBackgroundPreview() const
+    {
+        return _getThemedColorPreview(_appearance.DarkSelectionBackground(), _appearance.HasDarkSelectionBackground() || _appearance.DarkSelectionBackgroundOverrideSource(), _appearance.SelectionBackground(), CurrentDarkColorScheme().SelectionBackgroundColor().Color());
+    }
+
+    Windows::UI::Color AppearanceViewModel::DarkCursorColorPreview() const
+    {
+        return _getThemedColorPreview(_appearance.DarkCursorColor(), _appearance.HasDarkCursorColor() || _appearance.DarkCursorColorOverrideSource(), _appearance.CursorColor(), CurrentDarkColorScheme().CursorColor().Color());
+    }
+
+    Windows::UI::Color AppearanceViewModel::LightForegroundPreview() const
+    {
+        return _getThemedColorPreview(_appearance.LightForeground(), _appearance.HasLightForeground() || _appearance.LightForegroundOverrideSource(), _appearance.Foreground(), CurrentLightColorScheme().ForegroundColor().Color());
+    }
+
+    Windows::UI::Color AppearanceViewModel::LightBackgroundPreview() const
+    {
+        return _getThemedColorPreview(_appearance.LightBackground(), _appearance.HasLightBackground() || _appearance.LightBackgroundOverrideSource(), _appearance.Background(), CurrentLightColorScheme().BackgroundColor().Color());
+    }
+
+    Windows::UI::Color AppearanceViewModel::LightSelectionBackgroundPreview() const
+    {
+        return _getThemedColorPreview(_appearance.LightSelectionBackground(), _appearance.HasLightSelectionBackground() || _appearance.LightSelectionBackgroundOverrideSource(), _appearance.SelectionBackground(), CurrentLightColorScheme().SelectionBackgroundColor().Color());
+    }
+
+    Windows::UI::Color AppearanceViewModel::LightCursorColorPreview() const
+    {
+        return _getThemedColorPreview(_appearance.LightCursorColor(), _appearance.HasLightCursorColor() || _appearance.LightCursorColorOverrideSource(), _appearance.CursorColor(), CurrentLightColorScheme().CursorColor().Color());
     }
 
     DependencyProperty Appearances::_AppearanceProperty{ nullptr };

@@ -39,6 +39,20 @@
                         CornerRadius="1" />
             </DataTemplate>
 
+            <DataTemplate x:Key="ColorSchemeNameTemplate"
+                          x:DataType="local:ColorSchemeViewModel">
+                <Grid Padding="8"
+                      Background="{x:Bind mtu:Converters.ColorToBrush(BackgroundColor.Color), Mode=OneWay}"
+                      CornerRadius="2">
+                    <TextBlock MaxWidth="192"
+                               FontFamily="Cascadia Code"
+                               Foreground="{x:Bind mtu:Converters.ColorToBrush(ForegroundColor.Color), Mode=OneWay}"
+                               Text="{x:Bind Name, Mode=OneWay}"
+                               TextTrimming="WordEllipsis"
+                               ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" />
+                </Grid>
+            </DataTemplate>
+
             <DataTemplate x:Key="FontKeyValuePairTemplate"
                           x:DataType="local:FontKeyValuePair">
                 <Grid AutomationProperties.Name="{x:Bind AutomationName}"
@@ -75,19 +89,19 @@
         <StackPanel Spacing="2"
                     Style="{StaticResource PivotStackStyle}">
             <!--  Color scheme mode and theme-specific schemes  -->
-            <local:SettingsExpander x:Name="ColorScheme"
-                                    x:Uid="Profile_ColorSchemeMode">
-                <local:SettingsExpander.Content>
+            <StackPanel x:Name="ColorScheme"
+                        Spacing="2">
+                <local:SettingsCard x:Uid="Profile_ColorSchemeMode">
                     <ComboBox Padding="4"
                               ItemTemplate="{StaticResource EnumComboBoxTemplate}"
                               ItemsSource="{x:Bind ColorSchemeModeList}"
                               SelectedItem="{x:Bind CurrentColorSchemeMode, Mode=TwoWay}"
                               Style="{StaticResource ComboBoxSettingStyle}" />
-                </local:SettingsExpander.Content>
-                <local:SettingsExpander.ItemsHeader>
+                </local:SettingsCard>
+                <Grid>
                     <StackPanel Spacing="2">
-                        <local:SettingsCard x:Uid="Profile_DarkColorScheme">
-                            <local:SettingsCard.Content>
+                        <local:SettingsExpander x:Uid="Profile_DarkColorScheme">
+                            <local:SettingsExpander.Content>
                     <ComboBox Padding="4"
                               ItemsSource="{x:Bind Appearance.SchemesList, Mode=OneWay}"
                               SelectedItem="{x:Bind Appearance.CurrentDarkColorScheme, Mode=TwoWay}"
@@ -212,80 +226,160 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                            </local:SettingsCard.Content>
-                        </local:SettingsCard>
-                        <local:SettingsCard x:Uid="Profile_LightColorScheme">
-                            <local:SettingsCard.Content>
+                            </local:SettingsExpander.Content>
+                            <local:SettingsExpander.ItemsHeader>
+                                <ContentPresenter Padding="16,12,16,16">
+                                    <StackPanel Spacing="2">
+                                        <local:SettingsExpander x:Name="DarkForeground"
+                                                                x:Uid="Profile_Foreground"
+                                                                AutomationProperties.Name="{x:Bind Appearance.DarkForegroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.DarkForegroundPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_Foreground_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentDarkColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.DarkForeground, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentDarkColorScheme.ForegroundColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                        <local:SettingsExpander x:Name="DarkBackground"
+                                                                x:Uid="Profile_Background"
+                                                                AutomationProperties.Name="{x:Bind Appearance.DarkBackgroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.DarkBackgroundPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_Background_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentDarkColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.DarkBackground, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentDarkColorScheme.BackgroundColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                        <local:SettingsExpander x:Name="DarkSelectionBackground"
+                                                                x:Uid="Profile_SelectionBackground"
+                                                                AutomationProperties.Name="{x:Bind Appearance.DarkSelectionBackgroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.DarkSelectionBackgroundPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_SelectionBackground_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentDarkColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.DarkSelectionBackground, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentDarkColorScheme.SelectionBackgroundColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                        <local:SettingsExpander x:Name="DarkCursorColor"
+                                                                x:Uid="Profile_CursorColor"
+                                                                AutomationProperties.Name="{x:Bind Appearance.DarkCursorColorPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.DarkCursorColorPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_CursorColor_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentDarkColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.DarkCursorColor, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentDarkColorScheme.CursorColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                    </StackPanel>
+                                </ContentPresenter>
+                            </local:SettingsExpander.ItemsHeader>
+                        </local:SettingsExpander>
+                        <local:SettingsExpander x:Uid="Profile_LightColorScheme">
+                            <local:SettingsExpander.Content>
                                 <ComboBox Padding="4"
-                                          DisplayMemberPath="Name"
+                                          ItemTemplate="{StaticResource ColorSchemeNameTemplate}"
                                           ItemsSource="{x:Bind Appearance.SchemesList, Mode=OneWay}"
                                           SelectedItem="{x:Bind Appearance.CurrentLightColorScheme, Mode=TwoWay}"
                                           Style="{StaticResource ComboBoxSettingStyle}" />
-                            </local:SettingsCard.Content>
-                        </local:SettingsCard>
+                            </local:SettingsExpander.Content>
+                            <local:SettingsExpander.ItemsHeader>
+                                <ContentPresenter Padding="16,12,16,16">
+                                    <StackPanel Spacing="2">
+                                        <local:SettingsExpander x:Name="LightForeground"
+                                                                x:Uid="Profile_Foreground"
+                                                                AutomationProperties.Name="{x:Bind Appearance.LightForegroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.LightForegroundPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_Foreground_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentLightColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.LightForeground, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentLightColorScheme.ForegroundColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                        <local:SettingsExpander x:Name="LightBackground"
+                                                                x:Uid="Profile_Background"
+                                                                AutomationProperties.Name="{x:Bind Appearance.LightBackgroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.LightBackgroundPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_Background_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentLightColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.LightBackground, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentLightColorScheme.BackgroundColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                        <local:SettingsExpander x:Name="LightSelectionBackground"
+                                                                x:Uid="Profile_SelectionBackground"
+                                                                AutomationProperties.Name="{x:Bind Appearance.LightSelectionBackgroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.LightSelectionBackgroundPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_SelectionBackground_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentLightColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.LightSelectionBackground, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentLightColorScheme.SelectionBackgroundColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                        <local:SettingsExpander x:Name="LightCursorColor"
+                                                                x:Uid="Profile_CursorColor"
+                                                                AutomationProperties.Name="{x:Bind Appearance.LightCursorColorPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
+                                            <local:SettingsExpander.Content>
+                                                <ContentControl Content="{x:Bind Appearance.LightCursorColorPreview, Mode=OneWay}"
+                                                                ContentTemplate="{StaticResource ColorPreviewTemplate}" />
+                                            </local:SettingsExpander.Content>
+                                            <local:SettingsExpander.ItemsHeader>
+                                                <ContentPresenter Padding="16,12,16,16">
+                                                    <local:NullableColorPicker x:Uid="Profile_CursorColor_NullableColorPicker"
+                                                                               ColorSchemeVM="{x:Bind Appearance.CurrentLightColorScheme, Mode=OneWay}"
+                                                                               CurrentColor="{x:Bind Appearance.LightCursorColor, Mode=TwoWay}"
+                                                                               NullColorPreview="{x:Bind Appearance.CurrentLightColorScheme.CursorColor.Color, Mode=OneWay}" />
+                                                </ContentPresenter>
+                                            </local:SettingsExpander.ItemsHeader>
+                                        </local:SettingsExpander>
+                                    </StackPanel>
+                                </ContentPresenter>
+                            </local:SettingsExpander.ItemsHeader>
+                        </local:SettingsExpander>
                     </StackPanel>
-                </local:SettingsExpander.ItemsHeader>
-                <local:SettingsExpander.ItemsFooter>
-                    <ContentPresenter Padding="16,12,16,16">
-                        <StackPanel>
-
-                            <!--  Foreground Color  -->
-                            <local:SettingsExpander x:Name="Foreground"
-                                                    x:Uid="Profile_Foreground"
-                                                    AutomationProperties.Name="{x:Bind Appearance.ForegroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
-                                <local:SettingsExpander.Content>
-                                    <ContentControl Content="{x:Bind Appearance.ForegroundPreview, Mode=OneWay}"
-                                                    ContentTemplate="{StaticResource ColorPreviewTemplate}" />
-                                </local:SettingsExpander.Content>
-                                <local:SettingsExpander.ItemsHeader>
-                                    <ContentPresenter Padding="16,12,16,16">
-                                        <local:NullableColorPicker x:Uid="Profile_Foreground_NullableColorPicker"
-                                                                   ColorSchemeVM="{x:Bind Appearance.CurrentColorScheme, Mode=OneWay}"
-                                                                   CurrentColor="{x:Bind Appearance.Foreground, Mode=TwoWay}"
-                                                                   NullColorPreview="{x:Bind Appearance.CurrentColorScheme.ForegroundColor.Color, Mode=OneWay}" />
-                                    </ContentPresenter>
-                                </local:SettingsExpander.ItemsHeader>
-                            </local:SettingsExpander>
-
-                            <!--  Background Color  -->
-                            <local:SettingsExpander x:Name="Background"
-                                                    x:Uid="Profile_Background"
-                                                    AutomationProperties.Name="{x:Bind Appearance.BackgroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
-                                <local:SettingsExpander.Content>
-                                    <ContentControl Content="{x:Bind Appearance.BackgroundPreview, Mode=OneWay}"
-                                                    ContentTemplate="{StaticResource ColorPreviewTemplate}" />
-                                </local:SettingsExpander.Content>
-                                <local:SettingsExpander.ItemsHeader>
-                                    <ContentPresenter Padding="16,12,16,16">
-                                        <local:NullableColorPicker x:Uid="Profile_Background_NullableColorPicker"
-                                                                   ColorSchemeVM="{x:Bind Appearance.CurrentColorScheme, Mode=OneWay}"
-                                                                   CurrentColor="{x:Bind Appearance.Background, Mode=TwoWay}"
-                                                                   NullColorPreview="{x:Bind Appearance.CurrentColorScheme.BackgroundColor.Color, Mode=OneWay}" />
-                                    </ContentPresenter>
-                                </local:SettingsExpander.ItemsHeader>
-                            </local:SettingsExpander>
-
-                            <!--  Selection Background Color  -->
-                            <local:SettingsExpander x:Name="SelectionBackground"
-                                                    x:Uid="Profile_SelectionBackground"
-                                                    AutomationProperties.Name="{x:Bind Appearance.SelectionBackgroundPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
-                                <local:SettingsExpander.Content>
-                                    <ContentControl Content="{x:Bind Appearance.SelectionBackgroundPreview, Mode=OneWay}"
-                                                    ContentTemplate="{StaticResource ColorPreviewTemplate}" />
-                                </local:SettingsExpander.Content>
-                                <local:SettingsExpander.ItemsHeader>
-                                    <ContentPresenter Padding="16,12,16,16">
-                                        <local:NullableColorPicker x:Uid="Profile_SelectionBackground_NullableColorPicker"
-                                                                   ColorSchemeVM="{x:Bind Appearance.CurrentColorScheme, Mode=OneWay}"
-                                                                   CurrentColor="{x:Bind Appearance.SelectionBackground, Mode=TwoWay}"
-                                                                   NullColorPreview="{x:Bind Appearance.CurrentColorScheme.SelectionBackgroundColor.Color, Mode=OneWay}" />
-                                    </ContentPresenter>
-                                </local:SettingsExpander.ItemsHeader>
-                            </local:SettingsExpander>
-                        </StackPanel>
-                    </ContentPresenter>
-                </local:SettingsExpander.ItemsFooter>
-            </local:SettingsExpander>
+                </Grid>
+            </StackPanel>
             <!--  Font Face  -->
             <local:SettingsCard x:Name="FontFaceContainer"
                                 x:Uid="Profile_FontFace"
@@ -533,23 +627,6 @@
                 </Grid>
             </local:SettingsCard>
 
-            <!--  Cursor Color  -->
-            <local:SettingsExpander x:Name="CursorColor"
-                                    x:Uid="Profile_CursorColor"
-                                    AutomationProperties.Name="{x:Bind Appearance.CursorColorPreview, Converter={StaticResource ColorToStringConverter}, Mode=OneWay}">
-                <local:SettingsExpander.Content>
-                    <ContentControl Content="{x:Bind Appearance.CursorColorPreview, Mode=OneWay}"
-                                    ContentTemplate="{StaticResource ColorPreviewTemplate}" />
-                </local:SettingsExpander.Content>
-                <local:SettingsExpander.ItemsHeader>
-                    <ContentPresenter Padding="16,12,16,16">
-                        <local:NullableColorPicker x:Uid="Profile_CursorColor_NullableColorPicker"
-                                                   ColorSchemeVM="{x:Bind Appearance.CurrentColorScheme, Mode=OneWay}"
-                                                   CurrentColor="{x:Bind Appearance.CursorColor, Mode=TwoWay}"
-                                                   NullColorPreview="{x:Bind Appearance.CurrentColorScheme.CursorColor.Color, Mode=OneWay}" />
-                    </ContentPresenter>
-                </local:SettingsExpander.ItemsHeader>
-            </local:SettingsExpander>
         </StackPanel>
 
         <!--  Grouping: Background  -->

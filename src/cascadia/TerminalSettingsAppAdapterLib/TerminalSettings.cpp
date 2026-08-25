@@ -235,21 +235,35 @@ namespace winrt::Microsoft::Terminal::Settings
             break;
         }
 
-        if (appearance.Foreground())
+        const auto lightTheme = requestedTheme == winrt::Windows::UI::Xaml::ElementTheme::Light;
+        const auto themedForeground = lightTheme ? appearance.LightForeground() : appearance.DarkForeground();
+        const auto themedBackground = lightTheme ? appearance.LightBackground() : appearance.DarkBackground();
+        const auto themedSelectionBackground = lightTheme ? appearance.LightSelectionBackground() : appearance.DarkSelectionBackground();
+        const auto themedCursorColor = lightTheme ? appearance.LightCursorColor() : appearance.DarkCursorColor();
+        const auto hasThemedForeground = lightTheme ? (appearance.HasLightForeground() || appearance.LightForegroundOverrideSource()) : (appearance.HasDarkForeground() || appearance.DarkForegroundOverrideSource());
+        const auto hasThemedBackground = lightTheme ? (appearance.HasLightBackground() || appearance.LightBackgroundOverrideSource()) : (appearance.HasDarkBackground() || appearance.DarkBackgroundOverrideSource());
+        const auto hasThemedSelectionBackground = lightTheme ? (appearance.HasLightSelectionBackground() || appearance.LightSelectionBackgroundOverrideSource()) : (appearance.HasDarkSelectionBackground() || appearance.DarkSelectionBackgroundOverrideSource());
+        const auto hasThemedCursorColor = lightTheme ? (appearance.HasLightCursorColor() || appearance.LightCursorColorOverrideSource()) : (appearance.HasDarkCursorColor() || appearance.DarkCursorColorOverrideSource());
+        const auto foreground = hasThemedForeground ? themedForeground : appearance.Foreground();
+        const auto background = hasThemedBackground ? themedBackground : appearance.Background();
+        const auto selectionBackground = hasThemedSelectionBackground ? themedSelectionBackground : appearance.SelectionBackground();
+        const auto cursorColor = hasThemedCursorColor ? themedCursorColor : appearance.CursorColor();
+
+        if (foreground)
         {
-            _DefaultForeground = til::color{ appearance.Foreground().Value() };
+            _DefaultForeground = til::color{ foreground.Value() };
         }
-        if (appearance.Background())
+        if (background)
         {
-            _DefaultBackground = til::color{ appearance.Background().Value() };
+            _DefaultBackground = til::color{ background.Value() };
         }
-        if (appearance.SelectionBackground())
+        if (selectionBackground)
         {
-            _SelectionBackground = til::color{ appearance.SelectionBackground().Value() };
+            _SelectionBackground = til::color{ selectionBackground.Value() };
         }
-        if (appearance.CursorColor())
+        if (cursorColor)
         {
-            _CursorColor = til::color{ appearance.CursorColor().Value() };
+            _CursorColor = til::color{ cursorColor.Value() };
         }
 
         if (const auto backgroundImage{ appearance.BackgroundImagePath() })

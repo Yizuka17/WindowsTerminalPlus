@@ -54,6 +54,14 @@ namespace Microsoft.Terminal.Settings.Editor
         Windows.UI.Color BackgroundPreview { get; };
         Windows.UI.Color SelectionBackgroundPreview { get; };
         Windows.UI.Color CursorColorPreview { get; };
+        Windows.UI.Color DarkForegroundPreview { get; };
+        Windows.UI.Color DarkBackgroundPreview { get; };
+        Windows.UI.Color DarkSelectionBackgroundPreview { get; };
+        Windows.UI.Color DarkCursorColorPreview { get; };
+        Windows.UI.Color LightForegroundPreview { get; };
+        Windows.UI.Color LightBackgroundPreview { get; };
+        Windows.UI.Color LightSelectionBackgroundPreview { get; };
+        Windows.UI.Color LightCursorColorPreview { get; };
 
         String MissingFontFaces { get; };
         String ProportionalFontFaces { get; };
@@ -94,6 +102,14 @@ namespace Microsoft.Terminal.Settings.Editor
         OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, Background);
         OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, SelectionBackground);
         OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, CursorColor);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, DarkForeground);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, DarkBackground);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, DarkSelectionBackground);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, DarkCursorColor);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, LightForeground);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, LightBackground);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, LightSelectionBackground);
+        OBSERVABLE_PROJECTED_APPEARANCE_SETTING(Windows.Foundation.IReference<Microsoft.Terminal.Core.Color>, LightCursorColor);
     }
 
     [default_interface] runtimeclass Appearances : Windows.UI.Xaml.Controls.UserControl, Windows.UI.Xaml.Data.INotifyPropertyChanged
