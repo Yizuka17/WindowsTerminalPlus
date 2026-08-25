@@ -20,7 +20,7 @@
   <Identity
     Name="WindowsTerminalPlus"
     Publisher="CN=17yizuka"
-    Version="1.0.7.0" />
+    Version="1.0.8.0" />
 
   <Properties>
     <DisplayName>WindowsTerminalPlus</DisplayName>
@@ -125,6 +125,7 @@
             </com:ExeServer>
             <com:SurrogateServer DisplayName="WindowsTerminalPlusShellExt">
               <com:Class Id="B86E9642-BB81-4718-95E9-DA62F47D866E" Path="WindowsTerminalShellExt.dll" ThreadingModel="STA"/>
+              <com:Class Id="DA58CB87-480E-4EEA-B28E-492BB7D8EC41" Path="WindowsTerminalShellExt.dll" ThreadingModel="STA"/>
             </com:SurrogateServer>
           </com:ComServer>
         </com:Extension>
@@ -132,9 +133,11 @@
           <desktop4:FileExplorerContextMenus>
             <desktop5:ItemType Type="Directory">
               <desktop5:Verb Id="OpenTerminalPlus" Clsid="B86E9642-BB81-4718-95E9-DA62F47D866E" />
+              <desktop5:Verb Id="OpenTerminalPlusAdmin" Clsid="DA58CB87-480E-4EEA-B28E-492BB7D8EC41" />
             </desktop5:ItemType>
             <desktop5:ItemType Type="Directory\Background">
               <desktop5:Verb Id="OpenTerminalPlus" Clsid="B86E9642-BB81-4718-95E9-DA62F47D866E" />
+              <desktop5:Verb Id="OpenTerminalPlusAdmin" Clsid="DA58CB87-480E-4EEA-B28E-492BB7D8EC41" />
             </desktop5:ItemType>
           </desktop4:FileExplorerContextMenus>
         </desktop4:Extension>

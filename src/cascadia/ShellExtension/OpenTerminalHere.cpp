@@ -25,10 +25,19 @@ static constexpr std::wstring_view VerbName{ L"WindowsTerminalOpenHere" };
 //   failure from an earlier HRESULT.
 HRESULT OpenTerminalHere::Invoke(IShellItemArray* psiItemArray,
                                  IBindCtx* /*pBindContext*/)
+{
+    return InvokeWithElevation(psiItemArray, IsControlAndShiftPressed());
+}
+
+HRESULT OpenTerminalHere::InvokeElevated(IShellItemArray* psiItemArray)
+{
+    return InvokeWithElevation(psiItemArray, true);
+}
+
+HRESULT OpenTerminalHere::InvokeWithElevation(IShellItemArray* psiItemArray,
+                                              const bool runElevated)
 try
 {
-    const auto runElevated = IsControlAndShiftPressed();
-
     wil::com_ptr_nothrow<IShellItem> psi;
     RETURN_IF_FAILED(GetBestLocationFromSelectionOrSite(psiItemArray, psi.put()));
     if (!psi)
@@ -223,3 +232,76 @@ bool OpenTerminalHere::IsControlAndShiftPressed()
     // GetAsyncKeyState returns a value with the most significant bit set to 1 if the key is pressed. This is the sign bit.
     return control < 0 && shift < 0;
 }
+
+#if defined(WT_BRANDING_PLUS)
+OpenTerminalHereAdmin::OpenTerminalHereAdmin() :
+    delegate_{ Make<OpenTerminalHere>() }
+{
+}
+
+HRESULT OpenTerminalHereAdmin::Invoke(IShellItemArray* psiItemArray,
+                                      IBindCtx* /*pBindContext*/)
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->InvokeElevated(psiItemArray);
+}
+
+HRESULT OpenTerminalHereAdmin::GetToolTip(IShellItemArray* psiItemArray,
+                                          LPWSTR* ppszInfoTip)
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->GetToolTip(psiItemArray, ppszInfoTip);
+}
+
+HRESULT OpenTerminalHereAdmin::GetTitle(IShellItemArray* /*psiItemArray*/,
+                                        LPWSTR* ppszName)
+{
+    const auto resource = RS_(L"ShellExtension_OpenInTerminalMenuItem_Admin");
+    return SHStrDup(resource.data(), ppszName);
+}
+
+HRESULT OpenTerminalHereAdmin::GetState(IShellItemArray* psiItemArray,
+                                        BOOL fOkToBeSlow,
+                                        EXPCMDSTATE* pCmdState)
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->GetState(psiItemArray, fOkToBeSlow, pCmdState);
+}
+
+HRESULT OpenTerminalHereAdmin::GetIcon(IShellItemArray* psiItemArray,
+                                       LPWSTR* ppszIcon)
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->GetIcon(psiItemArray, ppszIcon);
+}
+
+HRESULT OpenTerminalHereAdmin::GetFlags(EXPCMDFLAGS* pFlags)
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->GetFlags(pFlags);
+}
+
+HRESULT OpenTerminalHereAdmin::GetCanonicalName(GUID* pguidCommandName)
+{
+    *pguidCommandName = __uuidof(OpenTerminalHereAdmin);
+    return S_OK;
+}
+
+HRESULT OpenTerminalHereAdmin::EnumSubCommands(IEnumExplorerCommand** ppEnum)
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->EnumSubCommands(ppEnum);
+}
+
+IFACEMETHODIMP OpenTerminalHereAdmin::SetSite(IUnknown* site) noexcept
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->SetSite(site);
+}
+
+IFACEMETHODIMP OpenTerminalHereAdmin::GetSite(REFIID riid, void** site) noexcept
+{
+    RETURN_HR_IF_NULL(E_OUTOFMEMORY, delegate_.Get());
+    return delegate_->GetSite(riid, site);
+}
+#endif

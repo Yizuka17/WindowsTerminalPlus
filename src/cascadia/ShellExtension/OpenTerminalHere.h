@@ -41,6 +41,7 @@ struct
 #pragma region IExplorerCommand
     STDMETHODIMP Invoke(IShellItemArray* psiItemArray,
                         IBindCtx* pBindContext);
+    HRESULT InvokeElevated(IShellItemArray* psiItemArray);
     STDMETHODIMP GetToolTip(IShellItemArray* psiItemArray,
                             LPWSTR* ppszInfoTip);
     STDMETHODIMP GetTitle(IShellItemArray* psiItemArray,
@@ -60,6 +61,7 @@ struct
 #pragma endregion
 
 private:
+    HRESULT InvokeWithElevation(IShellItemArray* psiItemArray, bool runElevated);
     HRESULT GetLocationFromSite(IShellItem** location) const noexcept;
     HRESULT GetBestLocationFromSelectionOrSite(IShellItemArray* psiArray, IShellItem** location) const noexcept;
     bool IsControlAndShiftPressed();
@@ -68,3 +70,37 @@ private:
 };
 
 CoCreatableClass(OpenTerminalHere);
+
+#if defined(WT_BRANDING_PLUS)
+struct __declspec(uuid("DA58CB87-480E-4EEA-B28E-492BB7D8EC41"))
+    OpenTerminalHereAdmin : public RuntimeClass<RuntimeClassFlags<ClassicCom | InhibitFtmBase>, IExplorerCommand, IObjectWithSite>
+{
+    OpenTerminalHereAdmin();
+
+#pragma region IExplorerCommand
+    STDMETHODIMP Invoke(IShellItemArray* psiItemArray,
+                        IBindCtx* pBindContext);
+    STDMETHODIMP GetToolTip(IShellItemArray* psiItemArray,
+                            LPWSTR* ppszInfoTip);
+    STDMETHODIMP GetTitle(IShellItemArray* psiItemArray,
+                          LPWSTR* ppszName);
+    STDMETHODIMP GetState(IShellItemArray* psiItemArray,
+                          BOOL fOkToBeSlow,
+                          EXPCMDSTATE* pCmdState);
+    STDMETHODIMP GetIcon(IShellItemArray* psiItemArray,
+                         LPWSTR* ppszIcon);
+    STDMETHODIMP GetFlags(EXPCMDFLAGS* pFlags);
+    STDMETHODIMP GetCanonicalName(GUID* pguidCommandName);
+    STDMETHODIMP EnumSubCommands(IEnumExplorerCommand** ppEnum);
+#pragma endregion
+#pragma region IObjectWithSite
+    IFACEMETHODIMP SetSite(IUnknown* site) noexcept;
+    IFACEMETHODIMP GetSite(REFIID riid, void** site) noexcept;
+#pragma endregion
+
+private:
+    Microsoft::WRL::ComPtr<OpenTerminalHere> delegate_;
+};
+
+CoCreatableClass(OpenTerminalHereAdmin);
+#endif
