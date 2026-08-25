@@ -31,6 +31,8 @@ struct
     __declspec(uuid("02db545a-3e20-46de-83a5-1329b1e88b6b"))
 #elif defined(WT_BRANDING_CANARY)
     __declspec(uuid("6119575F-6918-4392-AF16-C2C627AF9416"))
+#elif defined(WT_BRANDING_PLUS)
+    __declspec(uuid("B86E9642-BB81-4718-95E9-DA62F47D866E"))
 #else // DEV
     __declspec(uuid("52065414-e077-47ec-a3ac-1cc5455e1b54"))
 #endif

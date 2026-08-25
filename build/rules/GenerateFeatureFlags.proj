@@ -33,6 +33,8 @@
     <_WTBrandingName Condition="'$(WindowsTerminalBranding)'=='Canary'">Canary</_WTBrandingName>
     <_WTBrandingName Condition="'$(WindowsTerminalBranding)'=='Preview'">Preview</_WTBrandingName>
     <_WTBrandingName Condition="'$(WindowsTerminalBranding)'=='Release'">Release</_WTBrandingName>
+    <!-- Plus intentionally follows the Dev feature-staging channel while using an optimized Release build. -->
+    <_WTBrandingName Condition="'$(WindowsTerminalBranding)'=='Plus'">Dev</_WTBrandingName>
     <_WTBrandingName Condition="'$(_WTBrandingName)'==''">Dev</_WTBrandingName>
   </PropertyGroup>
 

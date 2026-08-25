@@ -52,12 +52,17 @@ namespace Microsoft.Terminal.Control
 
         void TouchMoved(Microsoft.Terminal.Core.Point newTouchPoint);
 
+        Boolean TouchSelectionActive { get; };
+
+        void TouchLongPressed(Microsoft.Terminal.Core.Point contactPoint);
+
         void PointerReleased(UInt32 pointerId,
                              MouseButtonState buttonState,
                              UInt32 pointerUpdateKind,
                              Microsoft.Terminal.Core.ControlKeyStates modifiers,
                              Microsoft.Terminal.Core.Point pixelPosition);
         void TouchReleased();
+        void TouchCanceled();
 
         Boolean MouseWheel(Microsoft.Terminal.Core.ControlKeyStates modifiers,
                            Microsoft.Terminal.Core.Point delta,

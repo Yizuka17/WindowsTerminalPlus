@@ -96,6 +96,8 @@ HRESULT OpenTerminalHere::GetTitle(IShellItemArray* /*psiItemArray*/,
         RS_(L"ShellExtension_OpenInTerminalMenuItem_Preview");
 #elif defined(WT_BRANDING_CANARY)
         RS_(L"ShellExtension_OpenInTerminalMenuItem_Canary");
+#elif defined(WT_BRANDING_PLUS)
+        std::wstring_view{ L"Open in WindowsTerminalPlus" };
 #else
         RS_(L"ShellExtension_OpenInTerminalMenuItem_Dev");
 #endif

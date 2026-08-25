@@ -4,6 +4,7 @@
     <_WTBrandingPreprocessorToken Condition="'$(WindowsTerminalBranding)'=='Canary'">WT_BRANDING_CANARY</_WTBrandingPreprocessorToken>
     <_WTBrandingPreprocessorToken Condition="'$(WindowsTerminalBranding)'=='Preview'">WT_BRANDING_PREVIEW</_WTBrandingPreprocessorToken>
     <_WTBrandingPreprocessorToken Condition="'$(WindowsTerminalBranding)'=='Release'">WT_BRANDING_RELEASE</_WTBrandingPreprocessorToken>
+    <_WTBrandingPreprocessorToken Condition="'$(WindowsTerminalBranding)'=='Plus'">WT_BRANDING_PLUS</_WTBrandingPreprocessorToken>
     <_WTBrandingPreprocessorToken Condition="'$(_WTBrandingPreprocessorToken)'==''">WT_BRANDING_DEV</_WTBrandingPreprocessorToken>
   </PropertyGroup>
 

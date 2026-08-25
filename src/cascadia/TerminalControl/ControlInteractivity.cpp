@@ -369,6 +369,9 @@ namespace winrt::Microsoft::Terminal::Control::implementation
     void ControlInteractivity::TouchPressed(const Core::Point contactPoint)
     {
         _touchAnchor = contactPoint;
+        _lastTouchPoint = contactPoint;
+        _touchStartedWithSelection = _core->HasSelection();
+        _touchInteractionState = TouchInteractionState::Pending;
     }
 
     bool ControlInteractivity::PointerMoved(const uint32_t /*pointerId*/,
@@ -444,33 +447,77 @@ namespace winrt::Microsoft::Terminal::Control::implementation
         {
             const auto anchor = _touchAnchor.value();
 
-            // Our actualFont's size is in pixels, convert to DIPs, which the
-            // rest of the Points here are in.
-            const auto fontSizeInDips{ _core->FontSizeInDips() };
+            const auto fontSize{ _core->FontSize() };
 
-            // Get the difference between the point we've dragged to and the start of the touch.
-            const auto dy = static_cast<float>(newTouchPoint.Y - anchor.Y);
-
-            // Start viewport scroll after we've moved more than a half row of text
-            if (std::abs(dy) > (fontSizeInDips.Height / 2.0f))
+            if (_touchInteractionState == TouchInteractionState::Pending)
             {
-                // Multiply by -1, because moving the touch point down will
-                // create a positive delta, but we want the viewport to move up,
-                // so we'll need a negative scroll amount (and the inverse for
-                // panning down)
-                const auto numRows = dy / -fontSizeInDips.Height;
+                const auto dx = static_cast<float>(newTouchPoint.X - anchor.X);
+                const auto dy = static_cast<float>(newTouchPoint.Y - anchor.Y);
+                const auto intentThreshold = std::min(fontSize.Width, fontSize.Height) / 2.0f;
 
-                const auto currentOffset = _core->ScrollOffset();
-                const auto newValue = numRows + currentOffset;
+                if (std::max(std::abs(dx), std::abs(dy)) > intentThreshold)
+                {
+                    if (std::abs(dx) > std::abs(dy))
+                    {
+                        _touchInteractionState = TouchInteractionState::Selecting;
 
-                // Update the Core's viewport position, and raise a
-                // ScrollPositionChanged event to update the scrollbar
-                UpdateScrollbar(newValue);
+                        // Match mouse drag selection: when dragging left, put the
+                        // anchor at the right edge of the initially touched cell.
+                        auto terminalAnchor = _getTerminalPosition(til::point{ anchor }, false);
+                        if (dx < 0)
+                        {
+                            terminalAnchor.x++;
+                        }
+                        _core->SetSelectionAnchor(terminalAnchor);
+                        _selectionNeedsToBeCopied = true;
+                    }
+                    else
+                    {
+                        _touchInteractionState = TouchInteractionState::Scrolling;
+                    }
+                }
+            }
 
-                // Use this point as our new scroll anchor.
-                _touchAnchor = newTouchPoint;
+            if (_touchInteractionState == TouchInteractionState::Selecting)
+            {
+                // Once horizontal movement starts a selection, keep extending it
+                // regardless of the subsequent movement direction until release.
+                SetEndSelectionPoint(newTouchPoint);
+            }
+            else if (_touchInteractionState == TouchInteractionState::Scrolling)
+            {
+                const auto lastPoint = _lastTouchPoint.value_or(anchor);
+                const auto dy = static_cast<float>(newTouchPoint.Y - lastPoint.Y);
+
+                // Preserve the existing row-based touch scrolling behavior.
+                if (std::abs(dy) > (fontSize.Height / 2.0f))
+                {
+                    const auto numRows = dy / -fontSize.Height;
+                    const auto newValue = numRows + _core->ScrollOffset();
+                    UpdateScrollbar(newValue);
+                    _lastTouchPoint = newTouchPoint;
+                }
             }
         }
+    }
+
+    bool ControlInteractivity::TouchSelectionActive() const noexcept
+    {
+        return _touchInteractionState == TouchInteractionState::Selecting;
+    }
+
+    void ControlInteractivity::TouchLongPressed(const Core::Point contactPoint)
+    {
+        if (_touchInteractionState != TouchInteractionState::Pending)
+        {
+            return;
+        }
+
+        _touchInteractionState = TouchInteractionState::ContextMenu;
+        _core->AnchorContextMenu(_getTerminalPosition(til::point{ contactPoint }, false));
+
+        auto contextArgs = winrt::make<ContextMenuRequestedEventArgs>(til::point{ contactPoint }.to_winrt_point());
+        ContextMenuRequested.raise(*this, contextArgs);
     }
 
     void ControlInteractivity::PointerReleased(const uint32_t /*pointerId*/,
@@ -508,7 +555,20 @@ namespace winrt::Microsoft::Terminal::Control::implementation
 
     void ControlInteractivity::TouchReleased()
     {
+        if (_touchInteractionState == TouchInteractionState::Pending && _touchStartedWithSelection)
+        {
+            _core->ClearSelection();
+        }
+
+        TouchCanceled();
+    }
+
+    void ControlInteractivity::TouchCanceled()
+    {
         _touchAnchor = std::nullopt;
+        _lastTouchPoint = std::nullopt;
+        _touchInteractionState = TouchInteractionState::None;
+        _touchStartedWithSelection = false;
     }
 
     // Method Description:

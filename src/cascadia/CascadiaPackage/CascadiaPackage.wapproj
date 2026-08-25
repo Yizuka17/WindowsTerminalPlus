@@ -17,6 +17,7 @@
     <AppxOSMinVersionReplaceManifestVersion>false</AppxOSMinVersionReplaceManifestVersion>
     <AppxOSMaxVersionTestedReplaceManifestVersion>false</AppxOSMaxVersionTestedReplaceManifestVersion>
     <OCExecutionAliasName Condition="'$(WindowsTerminalBranding)'=='' or '$(WindowsTerminalBranding)'=='Dev'">wtd</OCExecutionAliasName>
+    <OCExecutionAliasName Condition="'$(WindowsTerminalBranding)'=='Plus'">wtp</OCExecutionAliasName>
     <OCExecutionAliasName Condition="'$(OCExecutionAliasName)'==''">wt</OCExecutionAliasName>
   </PropertyGroup>
   <PropertyGroup>
@@ -49,6 +50,9 @@
     <AppxManifest Include="Package-Dev.appxmanifest" Condition="'$(WindowsTerminalBranding)'=='' or '$(WindowsTerminalBranding)'=='Dev'">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <AppxManifest Include="Package-Plus.appxmanifest" Condition="'$(WindowsTerminalBranding)'=='Plus'">
+      <SubType>Designer</SubType>
+    </AppxManifest>
   </ItemGroup>
   <ItemGroup>
     <!-- Resources -->
@@ -61,6 +65,9 @@
 
   <!-- This is picked up by CascadiaResources.build.items. -->
   <PropertyGroup Condition="'$(WindowsTerminalBranding)'=='' or '$(WindowsTerminalBranding)'=='Dev'">
+    <WindowsTerminalAssetSuffix>-Dev</WindowsTerminalAssetSuffix>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(WindowsTerminalBranding)'=='Plus'">
     <WindowsTerminalAssetSuffix>-Dev</WindowsTerminalAssetSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(WindowsTerminalBranding)'=='Preview'">

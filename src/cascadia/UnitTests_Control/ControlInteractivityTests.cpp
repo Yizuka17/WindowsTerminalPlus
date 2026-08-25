@@ -34,6 +34,9 @@ namespace ControlUnitTests
         TEST_METHOD(ScrollWithSelection);
         TEST_METHOD(TestScrollWithTrackpad);
         TEST_METHOD(TestQuickDragOnSelect);
+        TEST_METHOD(TouchHorizontalDragSelectsUntilRelease);
+        TEST_METHOD(TouchVerticalDragStillScrolls);
+        TEST_METHOD(TouchLongPressRequestsContextMenu);
 
         TEST_METHOD(TestDragSelectOutsideBounds);
 
@@ -597,6 +600,111 @@ namespace ControlUnitTests
         Log::Comment(L"Verify that it started on the first cell we clicked on, not the one we dragged to");
         til::point expectedAnchor{ 0, 0 };
         VERIFY_ARE_EQUAL(expectedAnchor, core->_terminal->GetSelectionAnchor());
+    }
+
+    void ControlInteractivityTests::TouchHorizontalDragSelectsUntilRelease()
+    {
+        auto [settings, conn] = _createSettingsAndConnection();
+        auto [core, interactivity] = _createCoreAndInteractivity(*settings, *conn);
+        _standardInit(core, interactivity);
+        interactivity->GotFocus();
+
+        const til::size fontSize{ til::math::rounding, core->FontSize() };
+        const auto start = til::point{ 5 * fontSize.width, 5 * fontSize.height };
+        const auto horizontal = start + til::point{ 2 * fontSize.width, 0 };
+        const auto verticalAfterSelection = horizontal + til::point{ 0, 2 * fontSize.height };
+
+        Log::Comment(L"A horizontal touch drag starts text selection");
+        interactivity->TouchPressed(start.to_core_point());
+        interactivity->TouchMoved(horizontal.to_core_point());
+        VERIFY_IS_TRUE(core->HasSelection());
+        VERIFY_IS_TRUE(interactivity->TouchSelectionActive());
+        VERIFY_ARE_EQUAL(static_cast<int>(Control::implementation::ControlInteractivity::TouchInteractionState::Selecting),
+                         static_cast<int>(interactivity->_touchInteractionState));
+
+        Log::Comment(L"Once selection starts, vertical movement continues the selection instead of scrolling");
+        const auto scrollOffset = core->ScrollOffset();
+        interactivity->TouchMoved(verticalAfterSelection.to_core_point());
+        VERIFY_ARE_EQUAL(scrollOffset, core->ScrollOffset());
+        VERIFY_ARE_EQUAL(7, core->_terminal->GetSelectionEnd().y);
+
+        Log::Comment(L"Releasing preserves the completed selection");
+        interactivity->TouchReleased();
+        VERIFY_IS_TRUE(core->HasSelection());
+        VERIFY_IS_FALSE(interactivity->TouchSelectionActive());
+
+        Log::Comment(L"A canceled touch does not behave like a tap and clear the existing selection");
+        interactivity->TouchPressed(start.to_core_point());
+        interactivity->TouchCanceled();
+        VERIFY_IS_TRUE(core->HasSelection());
+        VERIFY_IS_FALSE(interactivity->TouchSelectionActive());
+
+        Log::Comment(L"A subsequent touch tap clears the selection");
+        interactivity->TouchPressed(start.to_core_point());
+        interactivity->TouchReleased();
+        VERIFY_IS_FALSE(core->HasSelection());
+    }
+
+    void ControlInteractivityTests::TouchLongPressRequestsContextMenu()
+    {
+        auto [settings, conn] = _createSettingsAndConnection();
+        auto [core, interactivity] = _createCoreAndInteractivity(*settings, *conn);
+        _standardInit(core, interactivity);
+        interactivity->GotFocus();
+
+        const til::size fontSize{ til::math::rounding, core->FontSize() };
+        const auto contactPoint = til::point{ 4 * fontSize.width, 3 * fontSize.height };
+        auto requests = 0;
+        til::point requestedPosition{};
+        interactivity->ContextMenuRequested([&](auto&&, const Control::ContextMenuRequestedEventArgs& args) {
+            ++requests;
+            const auto position = args.Position();
+            requestedPosition = { til::math::rounding, position.X, position.Y };
+        });
+
+        interactivity->TouchPressed(contactPoint.to_core_point());
+        interactivity->TouchLongPressed(contactPoint.to_core_point());
+
+        VERIFY_ARE_EQUAL(1, requests);
+        VERIFY_ARE_EQUAL(contactPoint, requestedPosition);
+        VERIFY_ARE_EQUAL(static_cast<int>(Control::implementation::ControlInteractivity::TouchInteractionState::ContextMenu),
+                         static_cast<int>(interactivity->_touchInteractionState));
+
+        Log::Comment(L"Movement after the hold does not turn the gesture into a selection");
+        interactivity->TouchMoved((contactPoint + til::point{ 3 * fontSize.width, 0 }).to_core_point());
+        VERIFY_IS_FALSE(core->HasSelection());
+        interactivity->TouchReleased();
+    }
+
+    void ControlInteractivityTests::TouchVerticalDragStillScrolls()
+    {
+        auto [settings, conn] = _createSettingsAndConnection();
+        auto [core, interactivity] = _createCoreAndInteractivity(*settings, *conn);
+        _standardInit(core, interactivity);
+
+        for (auto i = 0; i < 40; ++i)
+        {
+            conn->WriteInput(winrt_wstring_to_array_view(L"Foo\r\n"));
+        }
+        VERIFY_ARE_EQUAL(21, core->ScrollOffset());
+        interactivity->GotFocus();
+
+        const til::size fontSize{ til::math::rounding, core->FontSize() };
+        const auto start = til::point{ 5 * fontSize.width, 5 * fontSize.height };
+        const auto vertical = start + til::point{ 0, 2 * fontSize.height };
+
+        interactivity->TouchPressed(start.to_core_point());
+        interactivity->TouchMoved(vertical.to_core_point());
+        VERIFY_ARE_EQUAL(19, core->ScrollOffset());
+        VERIFY_IS_FALSE(core->HasSelection());
+        VERIFY_IS_FALSE(interactivity->TouchSelectionActive());
+        VERIFY_ARE_EQUAL(static_cast<int>(Control::implementation::ControlInteractivity::TouchInteractionState::Scrolling),
+                         static_cast<int>(interactivity->_touchInteractionState));
+
+        Log::Comment(L"Once scrolling starts, horizontal movement cannot change it into selection");
+        interactivity->TouchMoved((vertical + til::point{ 5 * fontSize.width, 0 }).to_core_point());
+        VERIFY_IS_FALSE(core->HasSelection());
+        interactivity->TouchReleased();
     }
 
     void ControlInteractivityTests::TestDragSelectOutsideBounds()

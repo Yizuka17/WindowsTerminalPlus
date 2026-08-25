@@ -65,6 +65,8 @@ namespace winrt::Microsoft::Terminal::Control::implementation
                           const ::Microsoft::Terminal::Core::ControlKeyStates modifiers,
                           const Core::Point pixelPosition);
         void TouchMoved(const Core::Point newTouchPoint);
+        bool TouchSelectionActive() const noexcept;
+        void TouchLongPressed(const Core::Point contactPoint);
 
         void PointerReleased(const uint32_t pointerId,
                              Control::MouseButtonState buttonState,
@@ -72,6 +74,7 @@ namespace winrt::Microsoft::Terminal::Control::implementation
                              const ::Microsoft::Terminal::Core::ControlKeyStates modifiers,
                              const Core::Point pixelPosition);
         void TouchReleased();
+        void TouchCanceled();
 
         bool MouseWheel(const ::Microsoft::Terminal::Core::ControlKeyStates modifiers,
                         const Core::Point delta,
@@ -113,9 +116,22 @@ namespace winrt::Microsoft::Terminal::Control::implementation
         UINT _rowsToScroll = 3;
         float _internalScrollbarPosition = 0;
 
-        // If this is set, then we assume we are in the middle of panning the
-        //      viewport via touch input.
+        enum class TouchInteractionState
+        {
+            None,
+            Pending,
+            Scrolling,
+            Selecting,
+            ContextMenu,
+        };
+
+        // Touch starts out pending. Once movement crosses the intent threshold,
+        // it is classified as either scrolling or selecting and remains latched
+        // in that mode until the contact is released.
         std::optional<Core::Point> _touchAnchor;
+        std::optional<Core::Point> _lastTouchPoint;
+        TouchInteractionState _touchInteractionState{ TouchInteractionState::None };
+        bool _touchStartedWithSelection{ false };
 
         using Timestamp = uint64_t;
 

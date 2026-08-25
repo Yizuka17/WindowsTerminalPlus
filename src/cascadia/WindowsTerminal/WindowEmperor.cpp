@@ -491,6 +491,9 @@ void WindowEmperor::HandleCommandlineArgs(int nCmdShow)
 #elif defined(WT_BRANDING_CANARY)
     windowClassName.append(L"Windows Terminal Canary");
     unpackagedAumid = L"Microsoft.WindowsTerminalCanary";
+#elif defined(WT_BRANDING_PLUS)
+    windowClassName.append(L"WindowsTerminalPlus");
+    unpackagedAumid = L"WindowsTerminalPlus";
 #else
     windowClassName.append(L"Windows Terminal Dev");
     unpackagedAumid = L"WindowsTerminalDev";

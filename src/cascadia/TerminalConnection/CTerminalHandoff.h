@@ -24,6 +24,8 @@ Author(s):
 #define __CLSID_CTerminalHandoff "86633F1F-6454-40EC-89CE-DA4EBA977EE2"
 #elif defined(WT_BRANDING_CANARY)
 #define __CLSID_CTerminalHandoff "1706609C-A4CE-4C0D-B7D2-C19BF66398A5"
+#elif defined(WT_BRANDING_PLUS)
+#define __CLSID_CTerminalHandoff "FF106E35-9220-4326-A484-7516C0239C2A"
 #else
 #define __CLSID_CTerminalHandoff "051F34EE-C1FD-4B19-AF75-9BA54648434C"
 #endif

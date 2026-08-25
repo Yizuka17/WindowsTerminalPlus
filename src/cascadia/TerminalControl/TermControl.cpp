@@ -1954,6 +1954,16 @@ namespace winrt::Microsoft::Terminal::Control::implementation
         e.Handled(true);
     }
 
+    void TermControl::_HoldingHandler(const IInspectable& /*sender*/, const HoldingRoutedEventArgs& e)
+    {
+        if (e.PointerDeviceType() == Windows::Devices::Input::PointerDeviceType::Touch &&
+            e.HoldingState() == HoldingState::Started)
+        {
+            _interactivity.TouchLongPressed(_toTerminalOrigin(e.GetPosition(*this)));
+            e.Handled(true);
+        }
+    }
+
     // Method Description:
     // - handle a mouse click event. Begin selection process.
     // Arguments:
@@ -1992,11 +2002,7 @@ namespace winrt::Microsoft::Terminal::Control::implementation
 
         if (type == Windows::Devices::Input::PointerDeviceType::Touch)
         {
-            // NB: I don't think this is correct because the touch should be in the center of the rect.
-            //     I suspect the point.Position() would be correct.
-            const auto contactRect = point.Properties().ContactRect();
-            til::point newTouchPoint{ til::math::rounding, contactRect.X, contactRect.Y };
-            _interactivity.TouchPressed(newTouchPoint.to_core_point());
+            _interactivity.TouchPressed(_toTerminalOrigin(point.Position()));
         }
         else
         {
@@ -2053,40 +2059,24 @@ namespace winrt::Microsoft::Terminal::Control::implementation
             // into starting to scroll.
             if (!suppressFurtherHandling && _focused && _pointerPressedInBounds && point.Properties().IsLeftButtonPressed())
             {
-                // We want to find the distance relative to the bounds of the
-                // SwapChainPanel, not the entire control. If they drag out of
-                // the bounds of the text, into the padding, we still what that
-                // to auto-scroll
-                const auto cursorBelowBottomDist = cursorPosition.Y - SwapChainPanel().Margin().Top - SwapChainPanel().ActualHeight();
-                const auto cursorAboveTopDist = -1 * cursorPosition.Y + SwapChainPanel().Margin().Top;
-
-                constexpr auto MinAutoScrollDist = 2.0; // Arbitrary value
-                auto newAutoScrollVelocity = 0.0;
-                if (cursorBelowBottomDist > MinAutoScrollDist)
-                {
-                    newAutoScrollVelocity = _GetAutoScrollSpeed(cursorBelowBottomDist);
-                }
-                else if (cursorAboveTopDist > MinAutoScrollDist)
-                {
-                    newAutoScrollVelocity = -1.0 * _GetAutoScrollSpeed(cursorAboveTopDist);
-                }
-
-                if (newAutoScrollVelocity != 0)
-                {
-                    _TryStartAutoScroll(point, newAutoScrollVelocity);
-                }
-                else
-                {
-                    _TryStopAutoScroll(ptr.PointerId());
-                }
+                _UpdatePointerAutoScroll(point, cursorPosition);
             }
         }
         else if (type == Windows::Devices::Input::PointerDeviceType::Touch)
         {
-            const auto contactRect = point.Properties().ContactRect();
-            til::point newTouchPoint{ til::math::rounding, contactRect.X, contactRect.Y };
+            _interactivity.TouchMoved(pixelPosition);
 
-            _interactivity.TouchMoved(newTouchPoint.to_core_point());
+            // A horizontal drag latches touch selection until release. Reuse
+            // mouse selection's timer while that selected touch is beyond the
+            // text viewport so holding at an edge keeps scrolling and selecting.
+            if (_focused && _pointerPressedInBounds && _interactivity.TouchSelectionActive())
+            {
+                _UpdatePointerAutoScroll(point, cursorPosition);
+            }
+            else
+            {
+                _TryStopAutoScroll(ptr.PointerId());
+            }
         }
 
         args.Handled(true);
@@ -2132,6 +2122,31 @@ namespace winrt::Microsoft::Terminal::Control::implementation
 
         _TryStopAutoScroll(ptr.PointerId());
 
+        args.Handled(true);
+    }
+
+    // PointerCanceled and PointerCaptureLost do not necessarily produce a
+    // PointerReleased event. Reset touch selection and stop its auto-scroll so
+    // an OS gesture, focus change, or lost capture cannot leave either latched.
+    void TermControl::_PointerInterruptedHandler(const Windows::Foundation::IInspectable& /*sender*/,
+                                                 const Input::PointerRoutedEventArgs& args)
+    {
+        // A normal release clears this before intentionally releasing capture,
+        // so its resulting PointerCaptureLost event is not an interruption.
+        if (!_pointerPressedInBounds)
+        {
+            return;
+        }
+
+        _pointerPressedInBounds = false;
+
+        const auto ptr = args.Pointer();
+        if (ptr.PointerDeviceType() == Windows::Devices::Input::PointerDeviceType::Touch)
+        {
+            _interactivity.TouchCanceled();
+        }
+
+        _TryStopAutoScroll(ptr.PointerId());
         args.Handled(true);
     }
 
@@ -2284,6 +2299,38 @@ namespace winrt::Microsoft::Terminal::Control::implementation
             return true;
         }
         return false;
+    }
+
+    // Method Description:
+    // - Starts, updates, or stops selection auto-scroll based on the pointer's
+    //   distance beyond the text viewport.
+    void TermControl::_UpdatePointerAutoScroll(const Windows::UI::Input::PointerPoint& pointerPoint,
+                                               const Windows::Foundation::Point& cursorPosition)
+    {
+        // Measure against the SwapChainPanel rather than the entire control.
+        // Crossing into terminal padding should count as crossing the text edge.
+        const auto cursorBelowBottomDist = cursorPosition.Y - SwapChainPanel().Margin().Top - SwapChainPanel().ActualHeight();
+        const auto cursorAboveTopDist = -1 * cursorPosition.Y + SwapChainPanel().Margin().Top;
+
+        constexpr auto MinAutoScrollDist = 2.0;
+        auto newAutoScrollVelocity = 0.0;
+        if (cursorBelowBottomDist > MinAutoScrollDist)
+        {
+            newAutoScrollVelocity = _GetAutoScrollSpeed(cursorBelowBottomDist);
+        }
+        else if (cursorAboveTopDist > MinAutoScrollDist)
+        {
+            newAutoScrollVelocity = -1.0 * _GetAutoScrollSpeed(cursorAboveTopDist);
+        }
+
+        if (newAutoScrollVelocity != 0)
+        {
+            _TryStartAutoScroll(pointerPoint, newAutoScrollVelocity);
+        }
+        else
+        {
+            _TryStopAutoScroll(pointerPoint.PointerId());
+        }
     }
 
     // Method Description:
