@@ -20,7 +20,7 @@
   <Identity
     Name="WindowsTerminalPlus"
     Publisher="CN=17yizuka"
-    Version="1.0.2.0" />
+    Version="1.0.3.0" />
 
   <Properties>
     <DisplayName>WindowsTerminalPlus</DisplayName>
@@ -71,6 +71,7 @@
         <uap3:Extension Category="windows.appExecutionAlias" Executable="wtp.exe" EntryPoint="Windows.FullTrustApplication">
           <uap3:AppExecutionAlias>
             <desktop:ExecutionAlias Alias="wtp.exe" />
+            <desktop:ExecutionAlias Alias="wt.exe" />
           </uap3:AppExecutionAlias>
         </uap3:Extension>
         <uap5:Extension Category="windows.startupTask">
