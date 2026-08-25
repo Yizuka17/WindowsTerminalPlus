@@ -71,6 +71,11 @@
       <PreprocessorDefinitions>PROXY_CLSID_IS={0x1D1852F4,0xADAD,0x42B6,{0x9A,0x43,0x94,0x37,0xAA,0xAD,0x77,0x17}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(WindowsTerminalBranding)'=='Plus'">
+    <ClCompile>
+      <PreprocessorDefinitions>PROXY_CLSID_IS={0x635B2A83,0xC65C,0x4750,{0xB8,0x3D,0x29,0xF0,0x40,0x59,0x83,0xE2}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(WindowsTerminalBranding)'=='' or '$(WindowsTerminalBranding)'=='Dev'">
     <ClCompile>
       <PreprocessorDefinitions>PROXY_CLSID_IS={0xDEC4804D,0x56D1,0x4F73,{0x9F,0xBE,0x68,0x28,0xE7,0xC8,0x5C,0x56}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
