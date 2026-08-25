@@ -47,6 +47,11 @@ WindowsTerminalPlus 是基于 [Microsoft Windows Terminal](https://github.com/mi
 
 WindowsTerminalPlus 目前提供 x64 MSIX 安装包。
 
+安装前请先确定使用方式：
+
+- **仅独立使用：**可以保留微软 Windows Terminal，但需要通过 `wtp.exe` 明确启动 Plus；Win+X 等系统终端入口仍可能打开微软版本。
+- **用于 Win+X/系统终端：**请先卸载微软 Windows Terminal。两个软件包同时存在时，终端宿主注册和 `wt.exe` 执行别名会发生竞争，Windows 可能继续把系统入口交给微软版本。
+
 1. 打开[最新 Release](https://github.com/Yizuka17/WindowsTerminalPlus/releases/latest)。
 2. 下载以下两个文件：
    - `WindowsTerminalPlus_<版本>_x64.msix`
@@ -106,8 +111,9 @@ msbuild.exe .\OpenConsole.slnx /m `
 ## 兼容性说明
 
 - 最低需要 Windows 10 版本 2004（内部版本 19041），主要目标平台为 Windows 11。
-- WindowsTerminalPlus 使用独立的软件包标识，可以与微软 Windows Terminal 共存。如果命令别名冲突，可前往 **设置 → 应用 → 高级应用设置 → 应用执行别名**进行管理，并优先使用 `wtp.exe`。
-- Windows 默认终端、Win+X 菜单以及系统所有的菜单行为由 Windows 控制。安装本软件包不会替换由微软签名的系统组件。
+- 只有在通过 `wtp.exe` 独立使用时，才适合与微软 Windows Terminal 并存；并存不是可靠的系统接管配置。
+- 如果要让 Win+X、`wt.exe` 和 Windows 终端宿主入口指向 Plus，应先卸载微软 Windows Terminal，再安装 WindowsTerminalPlus。Microsoft Store 或 Windows 更新可能重新安装官方版本并重新取得这些注册。
+- Windows 默认终端及其他系统入口最终仍由 Windows 控制；WindowsTerminalPlus 不会替换微软签名的系统文件。
 - 附带证书为自签名证书。只有在证书受信任后，UAC 和软件包安装界面才会将发布者识别为 `17yizuka`。
 
 ## 上游项目与归属

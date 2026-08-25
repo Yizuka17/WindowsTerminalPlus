@@ -47,6 +47,11 @@ Dark and light modes also keep independent overrides for foreground, background,
 
 WindowsTerminalPlus currently ships as an x64 MSIX package.
 
+Choose the installation mode before continuing:
+
+- **Standalone use:** Microsoft Windows Terminal may remain installed, but launch Plus explicitly with `wtp.exe`. Win+X and other system terminal entry points may continue to open Microsoft's package.
+- **Win+X/system terminal use:** uninstall Microsoft Windows Terminal first. Keeping both packages installed causes terminal-host registration and the `wt.exe` alias to compete, so Windows may continue routing system entry points to the Microsoft package.
+
 1. Open the [latest release](https://github.com/Yizuka17/WindowsTerminalPlus/releases/latest).
 2. Download both files:
    - `WindowsTerminalPlus_<version>_x64.msix`
@@ -106,8 +111,9 @@ The public release certificate does not contain the private signing key. Reprodu
 ## Compatibility notes
 
 - Windows 10 version 2004 (build 19041) or later is required; Windows 11 is the primary target.
-- WindowsTerminalPlus uses its own package identity and can coexist with Microsoft Windows Terminal. If aliases conflict, manage them under **Settings → Apps → Advanced app settings → App execution aliases** and use `wtp.exe` explicitly.
-- Windows default-terminal, Win+X, and system-owned menu behavior is controlled by Windows. Installing this package does not replace Microsoft-signed system components.
+- Side-by-side installation is supported only for independent use through `wtp.exe`; it is not a reliable configuration for system integration.
+- To route Win+X, `wt.exe`, and Windows terminal-host entry points to Plus, uninstall Microsoft Windows Terminal before installing WindowsTerminalPlus. A Microsoft Store or Windows update may reinstall the official package and reclaim those registrations.
+- Windows default-terminal and other system-owned behavior is ultimately controlled by Windows. WindowsTerminalPlus does not replace Microsoft-signed system files.
 - The included certificate is self-signed. UAC and package installation identify the publisher as `17yizuka` only after the certificate is trusted.
 
 ## Upstream and attribution
