@@ -465,7 +465,7 @@ try
         {
             Clone(ppRetVal);
         }
-        UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase&>(**ppRetVal));
+        UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase*>(*ppRetVal));
         return S_OK;
     }
     case UIA_IsReadOnlyAttributeId:
@@ -475,7 +475,7 @@ try
         {
             Clone(ppRetVal);
         }
-        UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase&>(**ppRetVal));
+        UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase*>(*ppRetVal));
         return S_OK;
     }
     default:
@@ -488,14 +488,14 @@ try
         if (!_verifyAttr(attributeId, val, {}).has_value())
         {
             // The AttributeID is not supported.
-            UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase&>(**ppRetVal), UiaTracing::AttributeType::Unsupported);
+            UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, nullptr, UiaTracing::AttributeType::Unsupported);
             return E_NOTIMPL;
         }
     }
     catch (...)
     {
         LOG_HR(wil::ResultFromCaughtException());
-        UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase&>(**ppRetVal), UiaTracing::AttributeType::Error);
+        UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, nullptr, UiaTracing::AttributeType::Error);
         return E_INVALIDARG;
     }
 
@@ -598,7 +598,7 @@ try
         range._end = exclusiveIter.Pos();
     }
 
-    UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase&>(**ppRetVal));
+    UiaTracing::TextRange::FindAttribute(*this, attributeId, val, searchBackwards, static_cast<UiaTextRangeBase*>(*ppRetVal));
     return S_OK;
 }
 CATCH_RETURN();

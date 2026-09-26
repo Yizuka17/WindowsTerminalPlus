@@ -2121,6 +2121,10 @@ void ScreenBufferTests::ResizeCursorUnchanged()
     // Created for MSFT:19863799. Make sure when we resize the buffer, the
     //      cursor looks the same as it did before.
 
+    auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
+    gci.LockConsole(); // Lock must be taken to manipulate buffer.
+    auto unlock = wil::scope_exit([&] { gci.UnlockConsole(); });
+
     BEGIN_TEST_METHOD_PROPERTIES()
         TEST_METHOD_PROPERTY(L"Data:useResizeWithReflow", L"{false, true}")
         TEST_METHOD_PROPERTY(L"Data:dx", L"{-10, -1, 0, 1, 10}")
@@ -2133,7 +2137,6 @@ void ScreenBufferTests::ResizeCursorUnchanged()
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"dx", dx), L"change in width of buffer");
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"dy", dy), L"change in height of buffer");
 
-    auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
     auto& si = gci.GetActiveOutputBuffer().GetActiveBuffer();
     const auto& initialCursor = si.GetTextBuffer().GetCursor();
 
@@ -3488,6 +3491,8 @@ void ScreenBufferTests::DeleteCharsNearEndOfLineSimpleFirstCase()
     // There should be no artifacts left behind.
 
     auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
+    gci.LockConsole(); // Lock must be taken to manipulate buffer.
+    auto unlock = wil::scope_exit([&] { gci.UnlockConsole(); });
     auto& si = gci.GetActiveOutputBuffer();
     auto& stateMachine = si.GetStateMachine();
     const auto newBufferWidth = 8;
@@ -3545,6 +3550,8 @@ void ScreenBufferTests::DeleteCharsNearEndOfLineSimpleSecondCase()
     // There should be no artifacts left behind.
 
     auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
+    gci.LockConsole(); // Lock must be taken to manipulate buffer.
+    auto unlock = wil::scope_exit([&] { gci.UnlockConsole(); });
     auto& si = gci.GetActiveOutputBuffer();
     auto& stateMachine = si.GetStateMachine();
 
@@ -3989,6 +3996,8 @@ void ScreenBufferTests::InsertChars()
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"setVerticalMargins", setVerticalMargins));
 
     auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
+    gci.LockConsole(); // Lock must be taken to manipulate buffer.
+    auto unlock = wil::scope_exit([&] { gci.UnlockConsole(); });
     auto& si = gci.GetActiveOutputBuffer().GetActiveBuffer();
     auto& stateMachine = si.GetStateMachine();
     WI_SetFlag(si.OutputMode, ENABLE_VIRTUAL_TERMINAL_PROCESSING);
@@ -4189,6 +4198,8 @@ void ScreenBufferTests::DeleteChars()
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"setVerticalMargins", setVerticalMargins));
 
     auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
+    gci.LockConsole(); // Lock must be taken to manipulate buffer.
+    auto unlock = wil::scope_exit([&] { gci.UnlockConsole(); });
     auto& si = gci.GetActiveOutputBuffer().GetActiveBuffer();
     auto& stateMachine = si.GetStateMachine();
     WI_SetFlag(si.OutputMode, ENABLE_VIRTUAL_TERMINAL_PROCESSING);
@@ -4395,6 +4406,8 @@ void ScreenBufferTests::HorizontalScrollOperations()
     VERIFY_SUCCEEDED(TestData::TryGetValue(L"op", (int&)op));
 
     auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
+    gci.LockConsole(); // Lock must be taken to manipulate buffer.
+    auto unlock = wil::scope_exit([&] { gci.UnlockConsole(); });
     auto& si = gci.GetActiveOutputBuffer().GetActiveBuffer();
     auto& stateMachine = si.GetStateMachine();
     WI_SetFlag(si.OutputMode, ENABLE_VIRTUAL_TERMINAL_PROCESSING);

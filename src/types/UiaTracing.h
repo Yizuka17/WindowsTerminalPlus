@@ -45,7 +45,7 @@ namespace Microsoft::Console::Types
             static void Compare(const UiaTextRangeBase& base, const UiaTextRangeBase& other, bool result) noexcept;
             static void CompareEndpoints(const UiaTextRangeBase& base, const TextPatternRangeEndpoint endpoint, const UiaTextRangeBase& other, TextPatternRangeEndpoint otherEndpoint, int result) noexcept;
             static void ExpandToEnclosingUnit(TextUnit unit, const UiaTextRangeBase& result) noexcept;
-            static void FindAttribute(const UiaTextRangeBase& base, TEXTATTRIBUTEID attributeId, VARIANT val, BOOL searchBackwards, const UiaTextRangeBase& result, AttributeType attrType = AttributeType::Standard) noexcept;
+            static void FindAttribute(const UiaTextRangeBase& base, TEXTATTRIBUTEID attributeId, VARIANT val, BOOL searchBackwards, const UiaTextRangeBase* result, AttributeType attrType = AttributeType::Standard) noexcept;
             static void FindText(const UiaTextRangeBase& base, const std::wstring_view& text, bool searchBackward, bool ignoreCase, const UiaTextRangeBase& result) noexcept;
             static void GetAttributeValue(const UiaTextRangeBase& base, TEXTATTRIBUTEID id, VARIANT result, AttributeType attrType = AttributeType::Standard) noexcept;
             static void GetBoundingRectangles(const UiaTextRangeBase& base) noexcept;

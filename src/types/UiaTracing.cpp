@@ -229,7 +229,7 @@ void UiaTracing::TextRange::ExpandToEnclosingUnit(TextUnit unit, const UiaTextRa
     }
 }
 
-void UiaTracing::TextRange::FindAttribute(const UiaTextRangeBase& utr, TEXTATTRIBUTEID id, VARIANT val, BOOL searchBackwards, const UiaTextRangeBase& result, AttributeType attrType) noexcept
+void UiaTracing::TextRange::FindAttribute(const UiaTextRangeBase& utr, TEXTATTRIBUTEID id, VARIANT val, BOOL searchBackwards, const UiaTextRangeBase* result, AttributeType attrType) noexcept
 {
     EnsureRegistration();
     if (TraceLoggingProviderEnabled(g_UiaProviderTraceProvider, WINEVENT_LEVEL_VERBOSE, TIL_KEYWORD_TRACE))
@@ -242,7 +242,7 @@ void UiaTracing::TextRange::FindAttribute(const UiaTextRangeBase& utr, TEXTATTRI
             TraceLoggingValue(_getValue(val).c_str(), "text attribute sub-data"),
             TraceLoggingValue(searchBackwards ? L"true" : L"false", "search backwards"),
             TraceLoggingValue(_getValue(attrType).c_str(), "attribute type"),
-            TraceLoggingValue(_getValue(result).c_str(), "result"),
+            TraceLoggingValue(result ? _getValue(*result).c_str() : L"<no result>", "result"),
             TraceLoggingLevel(WINEVENT_LEVEL_VERBOSE),
             TraceLoggingKeyword(TIL_KEYWORD_TRACE));
     }
