@@ -108,6 +108,8 @@ msbuild.exe .\OpenConsole.slnx /m `
 
 The public release certificate does not contain the private signing key. Reproducing an identical signed release therefore requires your own code-signing certificate, but the source and unsigned build remain reproducible.
 
+Maintainers and automated tasks must follow the [WindowsTerminalPlus release workflow](WINDOWS_TERMINAL_PLUS_RELEASE.md) before installing or publishing a new version.
+
 ## Compatibility notes
 
 - Windows 10 version 2004 (build 19041) or later is required; Windows 11 is the primary target.

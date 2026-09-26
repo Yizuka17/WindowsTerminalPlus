@@ -108,6 +108,8 @@ msbuild.exe .\OpenConsole.slnx /m `
 
 公开提供的 Release 证书不包含私钥，因此如需重新制作签名包，需要使用自己的代码签名证书；源码和未签名构建本身仍然可以复现。
 
+维护者和自动化任务在安装或发布新版本前，必须遵循 [WindowsTerminalPlus 编译与发布流程](WINDOWS_TERMINAL_PLUS_RELEASE.md)。
+
 ## 兼容性说明
 
 - 最低需要 Windows 10 版本 2004（内部版本 19041），主要目标平台为 Windows 11。
