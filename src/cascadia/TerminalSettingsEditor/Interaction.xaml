@@ -58,6 +58,16 @@
                               Style="{StaticResource ToggleSwitchInExpanderStyle}" />
             </local:SettingsCard>
 
+            <!--  Paste Mode  -->
+            <local:SettingsCard x:Name="PasteMode"
+                                x:Uid="Globals_PasteMode">
+                <ComboBox AutomationProperties.AccessibilityView="Content"
+                          ItemTemplate="{StaticResource EnumComboBoxTemplate}"
+                          ItemsSource="{x:Bind ViewModel.PasteModeList, Mode=OneWay}"
+                          SelectedItem="{x:Bind ViewModel.CurrentPasteMode, Mode=TwoWay}"
+                          Style="{StaticResource ComboBoxSettingStyle}" />
+            </local:SettingsCard>
+
             <!--  Word Delimiters  -->
             <local:SettingsCard x:Name="WordDelimiters"
                                 x:Uid="Globals_WordDelimiters">

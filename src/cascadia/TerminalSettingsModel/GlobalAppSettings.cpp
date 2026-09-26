@@ -28,6 +28,7 @@ static constexpr std::string_view LegacyForceVTInputKey{ "experimental.input.for
 static constexpr std::string_view LegacyInputServiceWarningKey{ "inputServiceWarning" };
 static constexpr std::string_view LegacyWarnAboutLargePasteKey{ "largePasteWarning" };
 static constexpr std::string_view LegacyWarnAboutMultiLinePasteKey{ "multiLinePasteWarning" };
+static constexpr std::string_view LegacyPasteViaApplicationKey{ "pasteViaApplication" };
 static constexpr std::string_view LegacyConfirmCloseAllTabsKey{ "confirmCloseAllTabs" };
 static constexpr std::string_view LegacyPersistedWindowLayout{ "persistedWindowLayout" };
 
@@ -168,6 +169,14 @@ void GlobalAppSettings::LayerJson(const Json::Value& json, const OriginTag origi
     _fixupsAppliedDuringLoad = JsonUtils::GetValueForKey(json, LegacyInputServiceWarningKey, _InputServiceWarning) || _fixupsAppliedDuringLoad;
     _fixupsAppliedDuringLoad = JsonUtils::GetValueForKey(json, LegacyWarnAboutLargePasteKey, _WarnAboutLargePaste) || _fixupsAppliedDuringLoad;
     _fixupsAppliedDuringLoad = JsonUtils::GetValueForKey(json, LegacyWarnAboutMultiLinePasteKey, _WarnAboutMultiLinePaste) || _fixupsAppliedDuringLoad;
+    {
+        std::optional<bool> legacyPasteViaApplication;
+        if (JsonUtils::GetValueForKey(json, LegacyPasteViaApplicationKey, legacyPasteViaApplication))
+        {
+            _PasteMode = legacyPasteViaApplication.value() ? PasteMode::SingleBlock : PasteMode::Terminal;
+            _fixupsAppliedDuringLoad = true;
+        }
+    }
     // GH#6549 - Migrate legacy "confirmCloseAllTabs" boolean to the new
     // "confirmOnClose" enum. true -> Automatic, false -> Never.
     {

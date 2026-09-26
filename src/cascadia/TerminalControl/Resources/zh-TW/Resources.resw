@@ -225,6 +225,22 @@
     <value>貼上</value>
     <comment>The tooltip for a paste button</comment>
   </data>
+  <data name="EnterCommandButton.Label" xml:space="preserve">
+    <value>Enter</value>
+    <comment>The label of a button that sends the Enter key to the terminal.</comment>
+  </data>
+  <data name="EnterCommandButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>傳送 Enter 至終端機</value>
+    <comment>The tooltip for a button that sends the Enter key to the terminal.</comment>
+  </data>
+  <data name="ClipboardHistoryCommandButton.Label" xml:space="preserve">
+    <value>剪貼簿</value>
+    <comment>The label of a button that opens Windows clipboard history.</comment>
+  </data>
+  <data name="ClipboardHistoryCommandButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>開啟剪貼簿歷程記錄</value>
+    <comment>The tooltip for a button that opens Windows clipboard history.</comment>
+  </data>
   <data name="CopyCommandButton.Label" xml:space="preserve">
     <value>複製</value>
     <comment>The label of a button for copying the selected text to the clipboard.</comment>

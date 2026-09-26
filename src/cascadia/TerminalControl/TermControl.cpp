@@ -4155,6 +4155,32 @@ namespace winrt::Microsoft::Terminal::Control::implementation
         ContextMenu().Hide();
         SelectionContextMenu().Hide();
     }
+    void TermControl::_EnterCommandHandler(const IInspectable& /*sender*/,
+                                           const IInspectable& /*args*/)
+    {
+        _core.SendInput(L"\r");
+        ContextMenu().Hide();
+        SelectionContextMenu().Hide();
+    }
+    void TermControl::_ClipboardHistoryCommandHandler(const IInspectable& /*sender*/,
+                                                      const IInspectable& /*args*/)
+    {
+        ContextMenu().Hide();
+        SelectionContextMenu().Hide();
+
+        std::array<INPUT, 4> inputs{};
+        inputs[0].type = INPUT_KEYBOARD;
+        inputs[0].ki.wVk = VK_LWIN;
+        inputs[1].type = INPUT_KEYBOARD;
+        inputs[1].ki.wVk = L'V';
+        inputs[2].type = INPUT_KEYBOARD;
+        inputs[2].ki.wVk = L'V';
+        inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+        inputs[3].type = INPUT_KEYBOARD;
+        inputs[3].ki.wVk = VK_LWIN;
+        inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
+        LOG_LAST_ERROR_IF(::SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT)) != inputs.size());
+    }
     void TermControl::_CopyCommandHandler(const IInspectable& /*sender*/,
                                           const IInspectable& /*args*/)
     {

@@ -304,6 +304,22 @@
     <value>貼上時移除尾端空白字元</value>
     <comment>Header for a control to toggle whether pasted text should be trimmed of white spaces, or not.</comment>
   </data>
+  <data name="Globals_PasteMode.Header" xml:space="preserve">
+    <value>貼上模式</value>
+    <comment>Header for selecting how clipboard text is pasted into the terminal.</comment>
+  </data>
+  <data name="Globals_PasteMode.Description" xml:space="preserve">
+    <value>將多行文字保留為單一可編輯區塊，或使用原版 Windows Terminal 將剪貼簿文字直接寫入輸入資料流的行為。</value>
+    <comment>Description for selecting how clipboard text is pasted into the terminal.</comment>
+  </data>
+  <data name="Globals_PasteModeSingleBlock.Content" xml:space="preserve">
+    <value>可編輯文字區塊（建議）</value>
+    <comment>Paste through the foreground line editor so multiline text remains one editable block.</comment>
+  </data>
+  <data name="Globals_PasteModeTerminal.Content" xml:space="preserve">
+    <value>相容 Windows Terminal</value>
+    <comment>Use the original Windows Terminal behavior that writes clipboard text directly to the input stream.</comment>
+  </data>
   <data name="Globals_DefaultProfile.Header" xml:space="preserve">
     <value>預設設定檔</value>
     <comment>Header for a control to select your default profile from the list of profiles you've created.</comment>
@@ -913,6 +929,42 @@
   <data name="Profile_ColorScheme.Description" xml:space="preserve">
     <value>展開以覆寫前景、背景和選取範圍背景。</value>
     <comment>Help text for a control to select the scheme (or set) of colors used in the session. Directs the user to expand the control to access overrides for certain values in the color scheme.</comment>
+  </data>
+  <data name="Profile_ColorSchemeMode.Header" xml:space="preserve">
+    <value>外觀模式</value>
+    <comment>Header for choosing whether a profile follows the application theme or always uses its dark or light color scheme.</comment>
+  </data>
+  <data name="Profile_ColorSchemeMode.Description" xml:space="preserve">
+    <value>自動跟隨應用程式主題，或固定使用深色或淺色色彩配置。</value>
+    <comment>Description for the profile appearance mode setting.</comment>
+  </data>
+  <data name="Profile_ColorSchemeModeSystem.Content" xml:space="preserve">
+    <value>自動</value>
+    <comment>Follow the application's current dark or light theme.</comment>
+  </data>
+  <data name="Profile_ColorSchemeModeDark.Content" xml:space="preserve">
+    <value>深色</value>
+    <comment>Always use the profile's dark color scheme.</comment>
+  </data>
+  <data name="Profile_ColorSchemeModeLight.Content" xml:space="preserve">
+    <value>淺色</value>
+    <comment>Always use the profile's light color scheme.</comment>
+  </data>
+  <data name="Profile_DarkColorScheme.Header" xml:space="preserve">
+    <value>深色色彩配置</value>
+    <comment>Header for selecting the color scheme used in dark appearance mode.</comment>
+  </data>
+  <data name="Profile_DarkColorScheme.Description" xml:space="preserve">
+    <value>外觀模式為深色時使用。</value>
+    <comment>Description for the dark color scheme selector.</comment>
+  </data>
+  <data name="Profile_LightColorScheme.Header" xml:space="preserve">
+    <value>淺色色彩配置</value>
+    <comment>Header for selecting the color scheme used in light appearance mode.</comment>
+  </data>
+  <data name="Profile_LightColorScheme.Description" xml:space="preserve">
+    <value>外觀模式為淺色時使用。</value>
+    <comment>Description for the light color scheme selector.</comment>
   </data>
   <data name="Profile_Commandline.[using:Windows.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>命令列</value>

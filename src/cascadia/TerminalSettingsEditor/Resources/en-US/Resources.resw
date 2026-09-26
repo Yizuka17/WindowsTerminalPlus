@@ -304,6 +304,22 @@
     <value>Remove trailing white-space when pasting</value>
     <comment>Header for a control to toggle whether pasted text should be trimmed of white spaces, or not.</comment>
   </data>
+  <data name="Globals_PasteMode.Header" xml:space="preserve">
+    <value>Paste mode</value>
+    <comment>Header for selecting how clipboard text is pasted into the terminal.</comment>
+  </data>
+  <data name="Globals_PasteMode.Description" xml:space="preserve">
+    <value>Keep multiline text together as an editable block, or use the original Windows Terminal behavior that writes clipboard text directly to the input stream.</value>
+    <comment>Description for selecting how clipboard text is pasted into the terminal.</comment>
+  </data>
+  <data name="Globals_PasteModeSingleBlock.Content" xml:space="preserve">
+    <value>Editable block (recommended)</value>
+    <comment>Paste through the foreground line editor so multiline text remains one editable block.</comment>
+  </data>
+  <data name="Globals_PasteModeTerminal.Content" xml:space="preserve">
+    <value>Windows Terminal compatible</value>
+    <comment>Use the original Windows Terminal behavior that writes clipboard text directly to the input stream.</comment>
+  </data>
   <data name="Globals_DefaultProfile.Header" xml:space="preserve">
     <value>Default profile</value>
     <comment>Header for a control to select your default profile from the list of profiles you've created.</comment>

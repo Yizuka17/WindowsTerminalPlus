@@ -443,6 +443,8 @@ namespace winrt::Microsoft::Terminal::Control::implementation
         til::CoordType _calculateSearchScrollOffset() const;
 
         void _PasteCommandHandler(const IInspectable& sender, const IInspectable& args);
+        void _EnterCommandHandler(const IInspectable& sender, const IInspectable& args);
+        void _ClipboardHistoryCommandHandler(const IInspectable& sender, const IInspectable& args);
         void _CopyCommandHandler(const IInspectable& sender, const IInspectable& args);
         void _SearchCommandHandler(const IInspectable& sender, const IInspectable& args);
 

@@ -38,6 +38,22 @@
                           x:Uid="PasteCommandButton"
                           Click="_PasteCommandHandler"
                           Icon="Paste" />
+            <AppBarButton x:Name="EnterCommandButton"
+                          x:Uid="EnterCommandButton"
+                          Click="_EnterCommandHandler">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                              Glyph="&#xE751;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="ClipboardHistoryCommandButton"
+                          x:Uid="ClipboardHistoryCommandButton"
+                          Click="_ClipboardHistoryCommandHandler">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                              Glyph="&#xF0E3;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
             <mux:CommandBarFlyout.SecondaryCommands>
                 <AppBarButton x:Name="SelectCommandButton"
                               x:Uid="SelectCommandButton"
@@ -68,6 +84,22 @@
                           x:Uid="PasteWithSelectionCommandButton"
                           Click="_PasteCommandHandler"
                           Icon="Paste" />
+            <AppBarButton x:Name="EnterWithSelectionCommandButton"
+                          x:Uid="EnterCommandButton"
+                          Click="_EnterCommandHandler">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                              Glyph="&#xE751;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="ClipboardHistoryWithSelectionCommandButton"
+                          x:Uid="ClipboardHistoryCommandButton"
+                          Click="_ClipboardHistoryCommandHandler">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                              Glyph="&#xF0E3;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
             <mux:CommandBarFlyout.SecondaryCommands>
                 <AppBarButton x:Name="SelectCommandWithSelectionButton"
                               x:Uid="SelectCommandWithSelectionButton"

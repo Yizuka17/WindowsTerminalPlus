@@ -2464,6 +2464,12 @@
           "description": "When enabled, the Terminal will automatically trim trailing whitespace characters when pasting text",
           "type": "boolean"
         },
+        "pasteMode": {
+          "default": "singleBlock",
+          "description": "Controls whether multiline clipboard text is pasted as one editable block by the command-line editor or written directly to the terminal input stream using the original Windows Terminal behavior.",
+          "enum": ["singleBlock", "terminal"],
+          "type": "string"
+        },
         "experimental.detectURLs": {
           "default": true,
           "description": "When set to true, URLs will be detected by the Terminal. This will cause URLs to underline on hover and be clickable by pressing Ctrl.",

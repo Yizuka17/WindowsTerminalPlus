@@ -107,6 +107,14 @@ JSON_ENUM_MAPPER(::winrt::Microsoft::Terminal::Settings::Model::ConfirmOnClose)
     }
 };
 
+JSON_ENUM_MAPPER(::winrt::Microsoft::Terminal::Settings::Model::PasteMode)
+{
+    JSON_MAPPINGS(2) = {
+        pair_type{ "singleBlock", ValueType::SingleBlock },
+        pair_type{ "terminal", ValueType::Terminal },
+    };
+};
+
 JSON_FLAG_MAPPER(::winrt::Microsoft::Terminal::Settings::Model::BellStyle)
 {
     static constexpr std::array<pair_type, 7> mappings = {

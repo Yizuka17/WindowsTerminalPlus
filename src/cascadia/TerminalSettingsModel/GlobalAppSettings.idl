@@ -57,6 +57,12 @@ namespace Microsoft.Terminal.Settings.Model
         Always = 2,
     };
 
+    enum PasteMode
+    {
+        SingleBlock = 0,
+        Terminal = 1,
+    };
+
     [default_interface] runtimeclass GlobalAppSettings {
         // ---- Global-only settings (not per-window) ----
         INHERITABLE_SETTING(String, Language);
@@ -110,6 +116,7 @@ namespace Microsoft.Terminal.Settings.Model
         INHERITABLE_SETTING(Boolean, WarnAboutLargePaste);
         INHERITABLE_SETTING(Microsoft.Terminal.Control.WarnAboutMultiLinePaste, WarnAboutMultiLinePaste);
         INHERITABLE_SETTING(Boolean, TrimPaste);
+        INHERITABLE_SETTING(PasteMode, PasteMode);
         INHERITABLE_SETTING(LaunchPosition, InitialPosition);
         INHERITABLE_SETTING(Boolean, CenterOnLaunch);
         INHERITABLE_SETTING(Microsoft.Terminal.Control.DefaultInputScope, DefaultInputScope);

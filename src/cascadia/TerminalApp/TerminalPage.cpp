@@ -3140,6 +3140,37 @@ namespace winrt::TerminalApp::implementation
         const auto bracketedPaste = eventArgs.BracketedPasteEnabled();
         const auto sourceId = sender.try_as<ControlInteractivity>().Id();
 
+        // In single-block mode, let the foreground line editor read the clipboard itself.
+        // PSReadLine handles Ctrl+V by inserting multiline text into one editable buffer,
+        // whereas terminal-side paste turns embedded newlines into individual Enter keys.
+        // Send the control character directly so it isn't intercepted by our binding again.
+        if (windowSettings.PasteMode() == PasteMode::SingleBlock)
+        {
+            bool sent = false;
+            if (const auto& tab{ _GetFocusedTabImpl() })
+            {
+                tab->GetRootPane()->WalkTree([&](auto&& pane) {
+                    if (!sent)
+                    {
+                        if (const auto control = pane->GetTerminalControl())
+                        {
+                            if (control.ContentId() == sourceId)
+                            {
+                                control.SendInput(L"\x16"); // Ctrl+V
+                                sent = true;
+                            }
+                        }
+                    }
+                });
+            }
+            if (sent)
+            {
+                co_return;
+            }
+            // If the originating control disappeared while dispatching the request,
+            // fall back to the original terminal paste instead of losing the paste.
+        }
+
         // GetClipboardData might block for up to 30s for delay-rendered contents.
         co_await winrt::resume_background();
 

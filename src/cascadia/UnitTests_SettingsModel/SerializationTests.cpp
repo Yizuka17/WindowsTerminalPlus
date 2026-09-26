@@ -37,6 +37,7 @@ namespace SettingsModelUnitTests
         TEST_CLASS(SerializationTests);
 
         TEST_METHOD(GlobalSettings);
+        TEST_METHOD(LegacyPasteModeMigration);
         TEST_METHOD(Profile);
         TEST_METHOD(ColorScheme);
         TEST_METHOD(Actions);
@@ -130,6 +131,7 @@ namespace SettingsModelUnitTests
                 "disableAnimations": false,
 
                 "trimPaste": true,
+                "pasteMode": "terminal",
 
                 "warning.confirmOnClose": "automatic",
                 "warning.inputService" : true,
@@ -149,6 +151,21 @@ namespace SettingsModelUnitTests
 
         RoundtripTest<implementation::GlobalAppSettings>(globalsString);
         RoundtripTest<implementation::GlobalAppSettings>(smallGlobalsString);
+    }
+
+    void SerializationTests::LegacyPasteModeMigration()
+    {
+        const auto defaults = implementation::GlobalAppSettings::FromJson(VerifyParseSucceeded(R"({})"));
+        VERIFY_ARE_EQUAL(PasteMode::SingleBlock, defaults->PasteMode());
+
+        const auto legacySingleBlock = implementation::GlobalAppSettings::FromJson(VerifyParseSucceeded(R"({ "pasteViaApplication": true })"));
+        VERIFY_ARE_EQUAL(PasteMode::SingleBlock, legacySingleBlock->PasteMode());
+
+        const auto legacyTerminal = implementation::GlobalAppSettings::FromJson(VerifyParseSucceeded(R"({ "pasteViaApplication": false })"));
+        VERIFY_ARE_EQUAL(PasteMode::Terminal, legacyTerminal->PasteMode());
+
+        const auto modernSettingWins = implementation::GlobalAppSettings::FromJson(VerifyParseSucceeded(R"({ "pasteViaApplication": true, "pasteMode": "terminal" })"));
+        VERIFY_ARE_EQUAL(PasteMode::Terminal, modernSettingWins->PasteMode());
     }
 
     void SerializationTests::Profile()
